@@ -1,0 +1,2774 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f6f7fb" id="metaThemeColor" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="LexiFlash" />
+  <title>LexiFlash — Smart Study &amp; AI Flashcards</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234255ff'/%3E%3Cpath d='M18 18h18v10H28v18H18V18zm20 14h10v14H38V32z' fill='%23ffffff'/%3E%3Ccircle cx='43' cy='23' r='5' fill='%23ffcd1f'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #f6f7fb; --surface: #ffffff; --surface-secondary: #f0f2f8; --surface-hover: #f8f9fc;
+      --border: #edeff4; --border-strong: #d9dde8; --primary: #4255ff; --primary-hover: #2f40d6;
+      --primary-soft: rgba(66, 85, 255, .1); --primary-text: #4255ff;
+      --yellow: #ffcd1f; --yellow-soft: rgba(255, 205, 31, .18);
+      --green: #18ae79; --green-soft: rgba(24, 174, 121, .12);
+      --orange: #ff725b; --orange-soft: rgba(255, 114, 91, .12);
+      --text: #282e3e; --text-muted: #586380;
+      --shadow-sm: 0 2px 8px rgba(40, 46, 62, .05);
+      --shadow-md: 0 6px 20px rgba(40, 46, 62, .08);
+      --shadow-lg: 0 12px 34px rgba(40, 46, 62, .14);
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --font-sans: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0a092d; --surface: #2e3856; --surface-secondary: #1a1d4d; --surface-hover: #364163;
+      --border: #3c486b; --border-strong: #4b5882; --primary: #4255ff; --primary-hover: #5869ff;
+      --primary-soft: rgba(168, 177, 255, .14); --primary-text: #a8b1ff;
+      --yellow-soft: rgba(255, 205, 31, .16);
+      --green: #23c78d; --green-soft: rgba(35, 199, 141, .15);
+      --orange: #ff7f6b; --orange-soft: rgba(255, 127, 107, .15);
+      --text: #f6f7fb; --text-muted: #b8c1d9;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, .25);
+      --shadow-md: 0 6px 20px rgba(0, 0, 0, .35);
+      --shadow-lg: 0 14px 36px rgba(0, 0, 0, .5);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      margin: 0; padding: 0; min-height: 100%; background: var(--bg); color: var(--text);
+      font-family: var(--font-sans); font-size: 16px; line-height: 1.5; overflow-x: hidden;
+      transition: background-color .2s ease, color .2s ease;
+    }
+    body { padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px)); }
+    button, input, select, textarea { font: inherit; color: inherit; }
+
+    button {
+      cursor: pointer; border: none; background: none; padding: 0;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px;
+      transition: transform .12s ease, background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+    }
+    button:active:not(:disabled) { transform: scale(.98); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    svg { flex-shrink: 0; }
+    .hidden { display: none !important; }
+
+    /* Header */
+    .app-header {
+      position: sticky; top: 0; z-index: 90; background: var(--surface);
+      border-bottom: 1px solid var(--border); padding: calc(8px + env(safe-area-inset-top, 0px)) 16px 8px;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-inner { max-width: 1160px; margin: 0 auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -.02em; gap: 10px; padding-right: 4px; }
+    .brand-logo {
+      width: 36px; height: 36px; border-radius: 10px; background: var(--primary); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.15rem;
+      box-shadow: 0 3px 10px rgba(66, 85, 255, .35);
+    }
+    .search-box { flex: 1 1 220px; position: relative; display: flex; align-items: center; min-width: 160px; }
+    .search-box svg { position: absolute; left: 14px; color: var(--text-muted); pointer-events: none; }
+    .search-input {
+      width: 100%; height: 44px; padding: 0 38px 0 42px; border-radius: 999px;
+      border: 1.5px solid var(--border); background: var(--surface-secondary); font-size: .95rem; outline: none;
+      transition: border-color .15s ease, background-color .15s ease;
+    }
+    .search-input:focus { border-color: var(--primary); background: var(--surface); }
+    .search-clear { position: absolute; right: 4px; width: 36px; height: 36px; min-height: 36px; border-radius: 50%; color: var(--text-muted); }
+    .header-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+
+    /* Buttons & Badges */
+    .btn { padding: 0 16px; height: 44px; min-width: 44px; border-radius: var(--radius-md); font-weight: 600; font-size: .94rem; white-space: nowrap; }
+    .btn-sm { height: 38px; min-height: 38px; padding: 0 12px; font-size: .86rem; border-radius: var(--radius-sm); }
+    .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(66, 85, 255, .25); }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-secondary, .btn-icon { background: var(--surface-secondary); border: 1.5px solid var(--border); }
+    .btn-secondary:hover:not(:disabled), .btn-icon:hover:not(:disabled) { border-color: var(--border-strong); background: var(--surface-hover); }
+    .btn-outline-primary { background: var(--primary-soft); color: var(--primary-text); border: 1.5px solid transparent; }
+    .btn-outline-primary:hover:not(:disabled) { border-color: var(--primary); }
+    .btn-danger { background: var(--orange-soft); color: var(--orange); }
+    .btn-danger:hover:not(:disabled) { background: var(--orange); color: #fff; }
+    .btn-icon { width: 44px; height: 44px; padding: 0; border-radius: var(--radius-md); }
+    .btn-ghost { color: var(--text-muted); padding: 0 10px; border-radius: var(--radius-sm); }
+    .btn-ghost:hover:not(:disabled) { background: var(--surface-secondary); color: var(--text); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px;
+      font-size: .78rem; font-weight: 700; background: var(--surface-secondary); color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .badge-primary { background: var(--primary-soft); color: var(--primary-text); border-color: transparent; }
+    .badge-green { background: var(--green-soft); color: var(--green); border-color: transparent; }
+    .badge-yellow { background: var(--yellow-soft); color: #9b7800; border-color: transparent; }
+    html[data-theme="dark"] .badge-yellow { color: var(--yellow); }
+
+    /* Layout & Library */
+    .main-container { max-width: 1160px; margin: 0 auto; padding: 20px 16px 40px; }
+    .home-hero { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 18px; }
+    .home-title { margin: 0; font-size: 1.55rem; font-weight: 800; letter-spacing: -.02em; }
+    .home-subtitle { margin: 2px 0 0; color: var(--text-muted); font-size: .94rem; }
+
+    .filter-pills { display: flex; align-items: center; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 18px; scrollbar-width: none; }
+    .filter-pills::-webkit-scrollbar { display: none; }
+    .pill {
+      padding: 0 14px; height: 38px; min-height: 38px; border-radius: 999px; background: var(--surface);
+      border: 1.5px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: .88rem; white-space: nowrap;
+    }
+    .pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+    .sets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .set-card {
+      background: var(--surface); border: 1.5px solid var(--border); border-bottom-width: 3px;
+      border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow-sm);
+      display: flex; flex-direction: column; gap: 12px;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+    .set-card:hover { transform: translateY(-2px); border-color: var(--primary); box-shadow: var(--shadow-md); }
+    .set-card-badges { display: flex; flex-wrap: wrap; gap: 6px; }
+    .set-card-title { margin: 0; font-size: 1.15rem; font-weight: 700; line-height: 1.3; cursor: pointer; }
+    .set-card-desc {
+      margin: 0; font-size: .9rem; color: var(--text-muted);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .progress-wrap { display: flex; flex-direction: column; gap: 5px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: .8rem; font-weight: 600; color: var(--text-muted); }
+    .progress-track { width: 100%; height: 7px; border-radius: 999px; background: var(--surface-secondary); overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; background: var(--green); transition: width .3s ease; }
+    .set-card-actions { display: flex; align-items: center; gap: 8px; margin-top: auto; padding-top: 6px; border-top: 1px solid var(--border); }
+    .set-card-actions .btn-study { flex: 1; }
+
+    .empty-state {
+      background: var(--surface); border: 2px dashed var(--border-strong); border-radius: var(--radius-lg);
+      padding: 48px 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;
+    }
+
+    /* Forms & Editor */
+    .panel { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-sm); }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+    .input, .select, .textarea {
+      width: 100%; padding: 10px 14px; border-radius: var(--radius-md);
+      border: 1.5px solid var(--border-strong); background: var(--surface); font-size: .96rem; outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+    .input, .select { min-height: 44px; }
+    .textarea { min-height: 92px; resize: vertical; }
+    .input:focus, .select:focus, .textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+
+    .card-editor-row {
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-lg);
+      padding: 14px 16px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px;
+      transition: border-color .15s ease;
+    }
+    .card-editor-row:focus-within { border-color: var(--primary); }
+    .card-editor-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .card-num { font-weight: 800; color: var(--text-muted); font-size: .92rem; }
+    .card-row-tools { display: flex; align-items: center; gap: 4px; }
+    .card-editor-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field-wrap { display: flex; flex-direction: column; gap: 6px; }
+    .field-input-row { display: flex; align-items: center; gap: 6px; }
+    .line-input {
+      flex: 1; width: 100%; min-height: 44px; padding: 8px 2px; border: none;
+      border-bottom: 2px solid var(--border-strong); background: transparent; font-size: 1rem; outline: none;
+      transition: border-color .15s ease;
+    }
+    .line-input:focus { border-bottom-color: var(--primary); }
+    .field-caption { font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--text-muted); display: flex; justify-content: space-between; }
+
+    .suggest-btn { min-height: 34px; height: 34px; padding: 0 10px; border-radius: 999px; font-size: .8rem; font-weight: 700; background: var(--primary-soft); color: var(--primary-text); }
+    .suggest-btn:hover:not(:disabled) { background: var(--primary); color: #fff; }
+    .suggestions-tray {
+      display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px;
+      background: var(--surface-secondary); border-radius: var(--radius-md); border: 1px solid var(--border); align-items: center;
+    }
+    .suggest-chip {
+      min-height: 36px; padding: 6px 12px; border-radius: 999px; background: var(--surface);
+      border: 1.5px solid var(--border-strong); font-size: .86rem; font-weight: 600; text-align: left; line-height: 1.3;
+    }
+    .suggest-chip:hover { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-text); }
+    .suggest-chip-fix { border-color: var(--yellow); background: var(--yellow-soft); }
+
+    .star-btn.starred { color: var(--yellow); }
+    .speak-btn.speaking { color: var(--primary-text); background: var(--primary-soft); animation: pulseSpeak 1s infinite ease-in-out; }
+    @keyframes pulseSpeak { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+    /* Switch */
+    .switch-label { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; font-size: .9rem; font-weight: 600; min-height: 44px; user-select: none; }
+    .switch { position: relative; width: 46px; height: 26px; background: var(--border-strong); border-radius: 999px; transition: background-color .2s ease; flex-shrink: 0; }
+    .switch::after {
+      content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+      background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .25); transition: transform .2s ease;
+    }
+    .switch-input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .switch-input:checked + .switch { background: var(--primary); }
+    .switch-input:checked + .switch::after { transform: translateX(20px); }
+
+    /* Study View */
+    .set-top-bar { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+    .mode-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .mode-tab {
+      background: var(--surface); border: 1.5px solid var(--border); border-bottom-width: 3px;
+      border-radius: var(--radius-md); padding: 12px 14px; font-weight: 700; font-size: .96rem; box-shadow: var(--shadow-sm);
+    }
+    .mode-tab:hover { border-color: var(--primary); }
+    .mode-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .study-toolbar {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+      margin-bottom: 16px; padding: 10px 14px; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md);
+    }
+
+    /* 3D Flashcard */
+    .flashcard-stage { perspective: 1100px; width: 100%; max-width: 720px; margin: 0 auto 18px; touch-action: pan-y; }
+    .flashcard-3d {
+      position: relative; width: 100%; min-height: 320px; height: clamp(300px, 46vh, 420px);
+      transform-style: preserve-3d; transition: transform .45s cubic-bezier(.22, 1, .36, 1); cursor: pointer;
+    }
+    .flashcard-3d.is-flipped { transform: rotateY(180deg); }
+    .flashcard-face {
+      position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px;
+      box-shadow: var(--shadow-md); padding: 20px 24px; display: flex; flex-direction: column;
+    }
+    .flashcard-face-back { transform: rotateY(180deg); }
+    .flashcard-face-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; z-index: 2; }
+    .flashcard-side-label { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+    .flashcard-face-tools { display: flex; align-items: center; gap: 6px; }
+    .flashcard-content {
+      flex: 1; display: flex; align-items: center; justify-content: center; text-align: center;
+      font-size: clamp(1.35rem, 3.2vw, 2.15rem); font-weight: 700; line-height: 1.35; overflow-y: auto; padding: 12px 6px; word-break: break-word;
+    }
+    .flashcard-hint { text-align: center; font-size: .8rem; color: var(--text-muted); margin-top: 4px; }
+    .flashcard-controls { max-width: 720px; margin: 0 auto 20px; display: flex; flex-direction: column; gap: 12px; }
+    .fc-nav-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
+    .btn-still-learning, .btn-know {
+      flex: 1; max-width: 220px; height: 52px; border-radius: 14px; background: var(--surface); font-weight: 700; font-size: .98rem;
+    }
+    .btn-still-learning { border: 2px solid var(--orange); color: var(--orange); }
+    .btn-still-learning:hover { background: var(--orange-soft); }
+    .btn-know { border: 2px solid var(--green); color: var(--green); }
+    .btn-know:hover { background: var(--green-soft); }
+    .fc-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+    /* Learn & Test */
+    .study-card-box {
+      max-width: 760px; margin: 0 auto 24px; background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: 18px; padding: 24px; box-shadow: var(--shadow-md);
+    }
+    .mc-options-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 18px; }
+    .mc-option {
+      min-height: 56px; padding: 12px 16px; border-radius: var(--radius-md); border: 2px solid var(--border-strong);
+      background: var(--surface); font-weight: 600; text-align: left; justify-content: flex-start; gap: 12px; line-height: 1.35;
+    }
+    .mc-option:hover:not(:disabled), .mc-option.selected { border-color: var(--primary); background: var(--primary-soft); }
+    .mc-option.selected { color: var(--primary-text); }
+    .mc-option.correct { border-color: var(--green); background: var(--green-soft); color: var(--green); }
+    .mc-option.incorrect { border-color: var(--orange); background: var(--orange-soft); color: var(--orange); }
+    .mc-num {
+      width: 28px; height: 28px; border-radius: 50%; background: var(--surface-secondary);
+      border: 1px solid var(--border-strong); display: inline-flex; align-items: center; justify-content: center;
+      font-size: .82rem; font-weight: 800; flex-shrink: 0;
+    }
+    .feedback-banner {
+      margin-top: 16px; padding: 14px 16px; border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-weight: 600;
+    }
+    .feedback-banner.correct { background: var(--green-soft); border: 1.5px solid var(--green); color: var(--green); }
+    .feedback-banner.incorrect { background: var(--orange-soft); border: 1.5px solid var(--orange); color: var(--orange); }
+    .feedback-sub { font-size: .86rem; font-weight: 500; margin-top: 4px; opacity: .92; }
+
+    .terms-preview-section { margin-top: 32px; padding-top: 24px; border-top: 1.5px solid var(--border); }
+    .term-row-card {
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius-md);
+      padding: 14px 16px; display: grid; grid-template-columns: 1fr 1.2fr auto; gap: 14px; align-items: center;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 200; background: rgba(10, 9, 45, .65);
+      backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 14px; overflow-y: auto;
+    }
+    .modal-dialog {
+      width: 100%; max-width: 680px; max-height: calc(100vh - 28px); background: var(--surface);
+      border: 1.5px solid var(--border); border-radius: 20px; box-shadow: var(--shadow-lg);
+      display: flex; flex-direction: column; overflow: hidden; animation: modalIn .18s ease-out;
+    }
+    .modal-dialog.modal-lg { max-width: 820px; }
+    @keyframes modalIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    .modal-header { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .modal-title { margin: 0; font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+    .modal-body { padding: 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+    .modal-footer { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+
+    /* Camera */
+    .camera-box {
+      position: relative; width: 100%; aspect-ratio: 4/3; max-height: 55vh; background: #0b0d17;
+      border-radius: var(--radius-lg); overflow: hidden; display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--border);
+    }
+    .camera-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .camera-overlay-top { position: absolute; top: 12px; right: 12px; left: 12px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+    .camera-overlay-top > * { pointer-events: auto; }
+    .camera-overlay-bottom { position: absolute; bottom: 14px; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 20px; padding: 0 16px; }
+    .shutter-btn { width: 68px; height: 68px; min-height: 68px; border-radius: 50%; background: rgba(255, 255, 255, .25); border: 4px solid #fff; padding: 5px; box-shadow: 0 4px 16px rgba(0, 0, 0, .4); }
+    .shutter-btn::after { content: ""; width: 100%; height: 100%; border-radius: 50%; background: #fff; display: block; }
+    .camera-pill-btn { background: rgba(15, 18, 35, .72); color: #fff; border: 1px solid rgba(255, 255, 255, .28); backdrop-filter: blur(6px); border-radius: 999px; padding: 0 14px; height: 42px; min-height: 42px; font-size: .85rem; font-weight: 600; }
+    .camera-fallback { position: absolute; inset: 0; padding: 20px; background: rgba(10, 9, 45, .88); color: #f6f7fb; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; }
+
+    .dropzone { border: 2px dashed var(--border-strong); border-radius: var(--radius-md); padding: 16px; text-align: center; background: var(--surface-secondary); color: var(--text-muted); font-size: .9rem; transition: border-color .15s ease, background-color .15s ease; }
+    .dropzone.dragover { border-color: var(--primary); background: var(--primary-soft); color: var(--primary-text); }
+    .captured-preview-img { width: 100%; max-height: 360px; object-fit: contain; border-radius: var(--radius-md); background: #0b0d17; border: 1px solid var(--border); }
+
+    /* Spinner, Toast, Score */
+    .spinner { width: 20px; height: 20px; border: 2.5px solid rgba(255, 255, 255, .35); border-top-color: currentColor; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast-container { position: fixed; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%); z-index: 400; display: flex; flex-direction: column; gap: 8px; width: min(92vw, 440px); pointer-events: none; }
+    .toast { background: #282e3e; color: #fff; padding: 12px 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-lg); font-size: .92rem; font-weight: 600; display: flex; align-items: center; gap: 10px; pointer-events: auto; animation: toastIn .2s ease-out; }
+    .toast.toast-success { background: #148a60; }
+    .toast.toast-error { background: #d64531; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .score-circle { width: 120px; height: 120px; border-radius: 50%; border: 8px solid var(--primary); display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 1.85rem; margin: 0 auto 12px; background: var(--primary-soft); color: var(--primary-text); }
+
+    @media (max-width: 720px) {
+      .card-editor-fields, .term-row-card { grid-template-columns: 1fr; gap: 10px; }
+      .header-btn-label { display: none; }
+      .search-box { order: 3; flex: 1 1 100%; }
+      .mode-tab { padding: 10px 6px; font-size: .86rem; }
+      .study-card-box { padding: 18px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-inner">
+      <button type="button" class="brand" id="btnGoHome" aria-label="Go to Library">
+        <span class="brand-logo">L</span><span>LexiFlash</span>
+      </button>
+
+      <div class="search-box">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="search" id="globalSearchInput" class="search-input" placeholder="Search study sets, tags, terms..." aria-label="Search study sets" />
+        <button type="button" id="btnClearSearch" class="search-clear hidden" aria-label="Clear search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" id="btnHeaderCreate" class="btn btn-primary" title="Create Study Set">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+          <span class="header-btn-label">Create Set</span>
+        </button>
+        <button type="button" id="btnHeaderScan" class="btn btn-outline-primary" title="Scan Photo with AI">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+          <span class="header-btn-label">AI Scan</span>
+        </button>
+        <button type="button" id="btnThemeToggle" class="btn-icon" title="Toggle Light/Dark Mode" aria-label="Toggle theme">
+          <svg id="iconSun" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg id="iconMoon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+        <button type="button" id="btnHeaderTransfer" class="btn-icon" title="Export / Import Backup" aria-label="Export or Import Data">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </button>
+        <button type="button" id="btnHeaderSettings" class="btn-icon" title="Settings" aria-label="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container" id="mainContainer"></main>
+
+  <div id="scannerModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="scannerModalTitle">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h2 class="modal-title" id="scannerModalTitle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary-text)" stroke-width="2.2"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+          AI Photo-to-Flashcard Scanner
+        </h2>
+        <button type="button" class="btn-ghost" id="btnCloseScanner" aria-label="Close scanner">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="scannerModalBody"></div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="settingsModalTitle">Settings &amp; Gemini AI</h2>
+        <button type="button" class="btn-ghost" id="btnCloseSettings" aria-label="Close settings">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="settingsModalBody"></div>
+    </div>
+  </div>
+
+  <div id="transferModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="transferModalTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="transferModalTitle">Backup &amp; Transfer Data</h2>
+        <button type="button" class="btn-ghost" id="btnCloseTransfer" aria-label="Close backup modal">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body" id="transferModalBody"></div>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="modal-dialog" style="max-width:440px;">
+      <div class="modal-header"><h2 class="modal-title" id="confirmTitle">Confirm Action</h2></div>
+      <div class="modal-body"><p id="confirmMessage" style="margin:0;"></p></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnConfirmCancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="btnConfirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      /* =====================================================================
+         1. CONSTANTS, ICON HELPERS & STATE
+      ===================================================================== */
+      const STORAGE_KEY_SETS = "lexiflash_sets_v1";
+      const STORAGE_KEY_PREFS = "lexiflash_prefs_v1";
+      const $ = (id) => document.getElementById(id);
+
+      const LANGUAGES = [
+        { code: "en-US", label: "English (US)", short: "EN" },
+        { code: "zh-TW", label: "Traditional Chinese (繁體中文)", short: "ZH-TW" },
+        { code: "zh-CN", label: "Simplified Chinese (简体中文)", short: "ZH-CN" },
+        { code: "ja-JP", label: "Japanese (日本語)", short: "JA" },
+        { code: "ko-KR", label: "Korean (한국어)", short: "KO" },
+        { code: "es-ES", label: "Spanish (Español)", short: "ES" },
+        { code: "fr-FR", label: "French (Français)", short: "FR" },
+        { code: "de-DE", label: "German (Deutsch)", short: "DE" },
+        { code: "auto", label: "Auto-Detect", short: "AUTO" }
+      ];
+
+      const GEMINI_MODELS = [
+        { id: "gemini-4-hydrogen", label: "gemini-4-hydrogen (Default — Latest Fast Gemini 4)" },
+        { id: "gemini-3.8-flash", label: "gemini-3.8-flash (Fallback)" },
+        { id: "gemini-3.5-flash-lite", label: "gemini-3.5-flash-lite (Lightweight High-Speed)" }
+      ];
+
+      const DEFAULT_PREFS = {
+        theme: "light", apiKey: "", model: "gemini-4-hydrogen",
+        speechRate: 1.0, autoSuggest: false, aiGrading: true, voiceOverrides: {}
+      };
+
+      const uid = () => "id_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+      const makeCard = (term = "", def = "", starred = false) => ({ id: uid(), term, def, starred, mastery: 0 });
+      const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const svgIcon = (name, size = 18, filled = false) => {
+        const paths = {
+          speaker: `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>`,
+          star: `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`,
+          camera: `<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>`,
+          back: `<path d="m15 18-6-6 6-6"/>`,
+          plus: `<path d="M12 5v14M5 12h14"/>`,
+          edit: `<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>`,
+          trash: `<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>`,
+          up: `<path d="m18 15-6-6-6 6"/>`,
+          down: `<path d="m6 9 6 6 6-6"/>`
+        };
+        return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${filled ? "currentColor" : "none"}" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${paths[name]}</svg>`;
+      };
+
+      function createSampleSet() {
+        const now = Date.now();
+        return {
+          id: "sample_en_zhtw_1",
+          title: "Essential Academic & Daily English (核心詞彙)",
+          description: "High-frequency vocabulary — see the Chinese definition and recall the English word.",
+          folder: "English Vocab",
+          termLang: "en-US",
+          defLang: "zh-TW",
+          createdAt: now,
+          updatedAt: now,
+          cards: [
+            makeCard("resilient", "(adj.) 有韌性的；能迅速恢復的", true),
+            makeCard("ubiquitous", "(adj.) 無所不在的；普遍存在的"),
+            makeCard("pragmatic", "(adj.) 務實的；講求實效的", true),
+            makeCard("articulate", "(adj./v.) 口齒伶俐的；清楚表達"),
+            makeCard("mitigate", "(v.) 減輕；緩和（傷害或風險）"),
+            makeCard("serendipity", "(n.) 意外發現珍奇事物的運氣；機緣巧合")
+          ]
+        };
+      }
+
+      const state = {
+        sets: [],
+        prefs: { ...DEFAULT_PREFS },
+        view: "home",
+        searchQuery: "",
+        activeFolder: "ALL",
+        editor: {
+          editingSetId: null, title: "", description: "", folder: "",
+          termLang: "en-US", defLang: "zh-TW", cards: [],
+          showBulkImport: false, bulkText: "", suggestionsByCardId: {}, debounceTimers: {}
+        },
+        study: {
+          setId: null, mode: "flashcards", starredOnly: false,
+          fc: { deckIds: [], index: 0, flipped: false, swapFrontBack: true, trackProgress: true, autoPlayAudio: false, knowIds: [], learningIds: [], finished: false },
+          learn: { roundIds: [], queueIds: [], currentCardId: null, questionType: "mc", mcOptions: [], selectedOption: null, writtenInput: "", checkingAi: false, aiError: null, feedback: null, roundCorrect: 0, roundAttempts: 0, roundComplete: false, promptSide: "def" },
+          test: { phase: "setup", gradingAi: false, config: { count: 6, direction: "term", types: { mc: true, written: true, tf: true } }, questions: [], userAnswers: {}, results: null }
+        },
+        scanner: {
+          open: false, step: "capture", facingMode: "environment", stream: null, cameraError: "",
+          imageDataUrl: "", mode: "auto", termLang: "en-US", defLang: "zh-TW",
+          extracting: false, extractError: "", extractedCards: [], targetSetId: null
+        }
+      };
+
+      /* =====================================================================
+         2. PERSISTENCE, NORMALIZATION & UI HELPERS
+      ===================================================================== */
+      function loadData() {
+        try {
+          const rawPrefs = localStorage.getItem(STORAGE_KEY_PREFS);
+          if (rawPrefs) {
+            state.prefs = { ...DEFAULT_PREFS, ...JSON.parse(rawPrefs) };
+            if (!state.prefs.voiceOverrides || typeof state.prefs.voiceOverrides !== "object") state.prefs.voiceOverrides = {};
+          }
+        } catch (e) { console.warn("Failed to parse prefs:", e); }
+
+        try {
+          const rawSets = localStorage.getItem(STORAGE_KEY_SETS);
+          const parsed = rawSets !== null ? JSON.parse(rawSets) : null;
+          if (Array.isArray(parsed)) state.sets = parsed;
+          else { state.sets = [createSampleSet()]; saveSets(); }
+        } catch (e) {
+          console.warn("Failed to parse sets:", e);
+          state.sets = [createSampleSet()];
+        }
+        applyTheme(state.prefs.theme);
+      }
+
+      function saveSets() {
+        try { localStorage.setItem(STORAGE_KEY_SETS, JSON.stringify(state.sets)); }
+        catch { showToast("Storage full! Consider exporting a backup.", "error"); }
+      }
+
+      function savePrefs() {
+        try { localStorage.setItem(STORAGE_KEY_PREFS, JSON.stringify(state.prefs)); }
+        catch (e) { console.warn("Could not save prefs", e); }
+      }
+
+      function applyTheme(theme) {
+        const t = theme === "dark" ? "dark" : "light";
+        state.prefs.theme = t;
+        document.documentElement.setAttribute("data-theme", t);
+        $("metaThemeColor")?.setAttribute("content", t === "dark" ? "#0a092d" : "#f6f7fb");
+        $("iconSun")?.classList.toggle("hidden", t !== "dark");
+        $("iconMoon")?.classList.toggle("hidden", t === "dark");
+      }
+
+      const escapeHtml = (str) => String(str ?? "")
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+      const getLangInfo = (code) => LANGUAGES.find(l => l.code === code) || { code, label: code, short: code.toUpperCase() };
+      const langOpts = (selected) => LANGUAGES.map(l => `<option value="${escapeHtml(l.code)}" ${l.code === selected ? "selected" : ""}>${escapeHtml(l.label)}</option>`).join("");
+      const getSetById = (id) => state.sets.find(s => s.id === id) || null;
+
+      function shuffleArray(arr) {
+        const copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      const stripAnnotations = (str) => String(str || "")
+        .replace(/\([^)]*\)/g, " ").replace(/（[^）]*）/g, " ").replace(/\[[^\]]*\]/g, " ")
+        .replace(/\b(?:n|v|vt|vi|adj|adv|prep|conj|pron|interj)\.\s*/gi, " ");
+
+      const normalizeAnswer = (str) => stripAnnotations(str).toLowerCase().trim()
+        .replace(/[.,!?;:'"()（）「」『』、。！？；：·~～\-–—]/g, "").replace(/\s+/g, " ").trim();
+
+      function isLocallyAcceptable(userAnswer, expectedAnswer) {
+        const uNorm = normalizeAnswer(userAnswer);
+        if (!uNorm) return false;
+        if (uNorm === normalizeAnswer(expectedAnswer)) return true;
+        return stripAnnotations(expectedAnswer).split(/[;；/、,，]/).some(v => normalizeAnswer(v) === uNorm);
+      }
+
+      function buildMcOptions(allCards, excludeCardId, askDef, answerText) {
+        const seen = new Set([normalizeAnswer(answerText)]);
+        const distractors = [];
+        for (const c of shuffleArray(allCards)) {
+          if (c.id === excludeCardId) continue;
+          const txt = askDef ? c.def : c.term;
+          const norm = normalizeAnswer(txt);
+          if (txt && !seen.has(norm)) {
+            seen.add(norm);
+            distractors.push(txt);
+            if (distractors.length === 3) break;
+          }
+        }
+        return shuffleArray([answerText, ...distractors]);
+      }
+
+      function showToast(message, type = "info") {
+        const el = document.createElement("div");
+        el.className = `toast ${type === "success" ? "toast-success" : type === "error" ? "toast-error" : ""}`;
+        el.textContent = message;
+        $("toastContainer").appendChild(el);
+        setTimeout(() => {
+          el.style.opacity = "0";
+          el.style.transition = "opacity .2s ease";
+          setTimeout(() => el.remove(), 220);
+        }, 3200);
+      }
+
+      function showConfirm(title, message, okLabel = "Confirm", isDanger = true) {
+        return new Promise((resolve) => {
+          const modal = $("confirmModal"), okBtn = $("btnConfirmOk"), cancelBtn = $("btnConfirmCancel");
+          $("confirmTitle").textContent = title;
+          $("confirmMessage").textContent = message;
+          okBtn.textContent = okLabel;
+          okBtn.className = isDanger ? "btn btn-danger" : "btn btn-primary";
+          modal.classList.remove("hidden");
+          const done = (res) => {
+            modal.classList.add("hidden");
+            okBtn.onclick = cancelBtn.onclick = null;
+            resolve(res);
+          };
+          okBtn.onclick = () => done(true);
+          cancelBtn.onclick = () => done(false);
+        });
+      }
+
+      /* =====================================================================
+         3. WEB SPEECH API (CLEANUP & SMART VOICE SELECTION)
+      ===================================================================== */
+      let cachedVoices = [];
+      let currentUtterance = null;
+
+      function loadVoices() {
+        if ("speechSynthesis" in window) cachedVoices = window.speechSynthesis.getVoices() || [];
+      }
+      if ("speechSynthesis" in window) {
+        loadVoices();
+        window.speechSynthesis.addEventListener("voiceschanged", loadVoices);
+      }
+
+      function cleanTextForSpeech(rawText) {
+        let s = String(rawText || "").trim()
+          .replace(/\([^)]*\)/g, " ").replace(/（[^）]*）/g, " ")
+          .replace(/\[[^\]]*\]/g, " ").replace(/【[^】]*】/g, " ")
+          .replace(/^(?:n|v|vt|vi|adj|adv|prep|conj|pron|interj|phr)\.\s*/i, "")
+          .replace(/[;；/]+/g, "，").replace(/\s+/g, " ").replace(/^[，,\s]+|[，,\s]+$/g, "").trim();
+        return s || String(rawText || "").replace(/[()（）[\]【】]/g, "").trim();
+      }
+
+      function detectTextLang(text, fallback = "en-US") {
+        if (fallback && fallback !== "auto") return fallback;
+        if (/[\u3040-\u30ff]/.test(text)) return "ja-JP";
+        if (/[\uac00-\ud7af]/.test(text)) return "ko-KR";
+        if (/[\u4e00-\u9fff]/.test(text)) return "zh-TW";
+        return "en-US";
+      }
+
+      const normalizeVoiceLang = (lang) => String(lang || "").replace(/_/g, "-").toLowerCase().trim();
+
+      function scoreVoice(voice, targetLang) {
+        const vLang = normalizeVoiceLang(voice.lang);
+        const vName = (voice.name || "").toLowerCase();
+        const tLang = normalizeVoiceLang(targetLang);
+        const tBase = tLang.split("-")[0];
+        let score = 0;
+
+        if (tBase === "zh" || tBase === "cmn") {
+          const isCantonese = /hk|yue|cantonese|hong kong|粵|香港/.test(vLang + " " + vName);
+          if (isCantonese) return -1000;
+          if (tLang === "zh-tw") {
+            if (["zh-tw", "cmn-hant-tw", "cmn-tw"].includes(vLang)) score += 200;
+            else if (["zh-cn", "cmn-hans-cn", "cmn-cn", "zh"].includes(vLang)) score += 40;
+            else return -1000;
+            if (/taiwan|臺灣|台灣|國語|hsiaochen|hsiaoyu|yunjhe|meijia|yating|hanhan|zhiwei/.test(vName)) score += 80;
+          } else {
+            if (vLang === tLang || vLang === "cmn-hans-cn") score += 200;
+            else if (vLang.startsWith("zh") || vLang.startsWith("cmn")) score += 60;
+            else return -1000;
+          }
+        } else {
+          if (vLang === tLang) score += 200;
+          else if (vLang.startsWith(tBase + "-") || vLang === tBase) score += 80;
+          else return -1000;
+        }
+
+        if (/natural|neural|online|google|wavenet|studio|enhanced|premium|siri/.test(vName)) score += 70;
+        if (/espeak|festival/.test(vName)) score -= 80;
+        return score;
+      }
+
+      function pickBestVoice(langCode) {
+        if (!cachedVoices.length) loadVoices();
+        if (!cachedVoices.length) return null;
+        const overrides = state.prefs.voiceOverrides || {};
+        const overrideName = overrides[langCode] || overrides[normalizeVoiceLang(langCode)];
+        if (overrideName) {
+          const manual = cachedVoices.find(v => v.name === overrideName);
+          if (manual) return manual;
+        }
+        let best = null, bestScore = -999;
+        for (const v of cachedVoices) {
+          const sc = scoreVoice(v, langCode);
+          if (sc > bestScore) { bestScore = sc; best = v; }
+        }
+        return best;
+      }
+
+      function speakText(rawText, langCode, btnEl = null) {
+        const text = cleanTextForSpeech(rawText);
+        if (!text) return;
+        if (!("speechSynthesis" in window)) return showToast("Text-to-Speech is not supported on this browser.", "error");
+
+        document.querySelectorAll(".speak-btn.speaking").forEach(b => b.classList.remove("speaking"));
+        window.speechSynthesis.cancel();
+
+        const resolvedLang = detectTextLang(text, langCode);
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = resolvedLang;
+        utter.rate = Number(state.prefs.speechRate) || 1.0;
+
+        const voice = pickBestVoice(resolvedLang);
+        if (voice) {
+          utter.voice = voice;
+          if (voice.lang) utter.lang = voice.lang;
+        }
+
+        const clearSpeak = () => { btnEl?.classList.remove("speaking"); currentUtterance = null; };
+        btnEl?.classList.add("speaking");
+        utter.onend = utter.onerror = clearSpeak;
+        currentUtterance = utter;
+
+        setTimeout(() => {
+          try { window.speechSynthesis.speak(utter); }
+          catch { clearSpeak(); }
+        }, 30);
+      }
+
+      /* =====================================================================
+         4. GEMINI API CLIENT & AI HELPERS (AUTO-RETRY ON TRAFFIC)
+      ===================================================================== */
+      function parseGeminiJson(rawText) {
+        let cleaned = String(rawText || "").trim();
+        if (cleaned.startsWith("```")) cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+        return JSON.parse(cleaned);
+      }
+
+      function isTransientTrafficError(status, msg, isNetworkError) {
+        if (isNetworkError && navigator.onLine !== false) return true;
+        if ([408, 429, 500, 502, 503, 504].includes(status)) return true;
+        return /overload|high demand|traffic|too many|rate limit|resource.?exhausted|unavailable|temporarily|capacity|timeout|try again|busy/i.test(msg || "");
+      }
+
+      async function callGemini({ parts, expectJson = true, maxRetries = 2 }) {
+        const apiKey = (state.prefs.apiKey || "").trim();
+        if (!apiKey) throw new Error("MISSING_KEY");
+        if (!navigator.onLine) throw new Error("You appear to be offline. Please check your internet connection.");
+
+        const model = state.prefs.model || "gemini-4-hydrogen";
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const payload = { contents: [{ role: "user", parts }] };
+        if (expectJson) payload.generationConfig = { responseMimeType: "application/json" };
+
+        let lastError = null;
+
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          let res = null;
+          let status = 0;
+          let apiMsg = "";
+          let isNetworkError = false;
+
+          try {
+            res = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload)
+            });
+            status = res.status;
+
+            if (!res.ok) {
+              try { apiMsg = (await res.json())?.error?.message || ""; } catch {}
+
+              if ([400, 401, 403].includes(status) && !isTransientTrafficError(status, apiMsg, false)) {
+                throw new Error(`API key or request rejected (${status}). ${apiMsg || "Check your Gemini API key in Settings."}`);
+              }
+
+              const reason = status === 429
+                ? "High traffic / rate limit (HTTP 429)"
+                : status === 503
+                ? "AI server overloaded (HTTP 503)"
+                : `Server error (HTTP ${status})`;
+              const err = new Error(apiMsg ? `${reason}: ${apiMsg}` : `${reason}. Please try again.`);
+              err.status = status;
+              err.transient = isTransientTrafficError(status, apiMsg, false);
+              throw err;
+            }
+
+            const data = await res.json();
+            const candidate = data?.candidates?.[0];
+            const text = candidate?.content?.parts?.[0]?.text;
+
+            if (!text) {
+              const finishReason = candidate?.finishReason || "";
+              const blocked = ["SAFETY", "RECITATION", "PROHIBITED_CONTENT"].includes(finishReason);
+              const err = new Error(blocked
+                ? `Gemini blocked the response (${finishReason}). Try adjusting your input.`
+                : "Gemini returned an empty response under load.");
+              err.transient = !blocked;
+              throw err;
+            }
+
+            return expectJson ? parseGeminiJson(text) : text;
+          } catch (err) {
+            if (err instanceof TypeError || err.name === "AbortError") {
+              isNetworkError = true;
+            }
+            const msg = err?.message || "Network error";
+            const transient = Boolean(err?.transient) || isTransientTrafficError(status, msg, isNetworkError);
+            lastError = err;
+
+            if (transient && attempt < maxRetries) {
+              let delayMs = 1100 * (attempt + 1) + Math.floor(Math.random() * 400);
+              const retryAfter = res?.headers?.get?.("Retry-After");
+              if (retryAfter && /^\d+$/.test(retryAfter.trim())) {
+                delayMs = Math.min(6000, Math.max(800, Number(retryAfter.trim()) * 1000));
+              }
+              const shortReason = status ? `HTTP ${status}` : "busy";
+              showToast(`AI server busy (${shortReason}). Retrying (${attempt + 1}/${maxRetries})...`, "info");
+              await sleep(delayMs);
+              continue;
+            }
+            throw lastError;
+          }
+        }
+        throw lastError || new Error("AI request failed.");
+      }
+
+      async function gradeWrittenWithAi({ promptText, promptLang, answerText, answerLang, userAnswer }) {
+        const prompt = `You are a fair, encouraging bilingual flashcard grader.
+Question shown to student (${getLangInfo(promptLang).label}): "${promptText}"
+Expected reference answer (${getLangInfo(answerLang).label}): "${answerText}"
+Student's typed answer: "${userAnswer}"
+
+Decide if the student's answer demonstrates they know the meaning/word.
+Be forgiving of:
+- Missing part-of-speech tags like (n.), (v.), (adj.)
+- Valid synonyms or closely equivalent translations/word forms (e.g. "to mitigate" for "mitigate", or a valid Chinese/English synonym)
+- Minor single-letter typos if the intended word is obvious
+Mark FALSE if the student typed a completely wrong word, wrong meaning, or gibberish.
+
+Return strictly valid JSON:
+{
+  "correct": true or false,
+  "feedback": "Very concise 5-14 word explanation"
+}`;
+        const res = await callGemini({ parts: [{ text: prompt }], expectJson: true });
+        return { correct: Boolean(res?.correct), feedback: String(res?.feedback || "").trim() };
+      }
+
+      async function batchGradeWrittenTestWithAi(items) {
+        const prompt = `You are a fair bilingual flashcard exam grader. Grade each student written answer below.
+Be forgiving of missing part-of-speech tags like (n.), minor typos, infinitive "to", or valid synonyms/translations matching the question.
+Mark FALSE if the meaning is wrong or blank.
+
+Items:
+${JSON.stringify(items.map(it => ({ id: it.id, question: it.prompt, expected: it.correctAnswer, studentAnswer: it.userAnswer })))}
+
+Return strictly valid JSON with this exact schema:
+{
+  "results": [
+    { "id": "matching item id", "correct": true or false, "feedback": "short 4-10 word note" }
+  ]
+}`;
+        const res = await callGemini({ parts: [{ text: prompt }], expectJson: true });
+        const map = {};
+        if (Array.isArray(res?.results)) {
+          for (const r of res.results) {
+            if (r?.id) map[r.id] = { correct: Boolean(r.correct), feedback: String(r.feedback || "").trim() };
+          }
+        }
+        return map;
+      }
+
+      async function requestCardSuggestions(cardId, direction = "termToDef") {
+        const card = state.editor.cards.find(c => c.id === cardId);
+        if (!card) return;
+        const sourceText = (direction === "termToDef" ? card.term : card.def).trim();
+        if (!sourceText) return showToast(direction === "termToDef" ? "Type a term first to get suggestions." : "Type a definition first.", "error");
+
+        state.editor.suggestionsByCardId[cardId] = { loading: true, error: "", direction, autocomplete: "", items: [] };
+        renderEditorSuggestions(cardId);
+
+        const termLangLabel = getLangInfo(state.editor.termLang).label;
+        const defLangLabel = getLangInfo(state.editor.defLang).label;
+        const prompt = direction === "termToDef"
+          ? `You are a concise bilingual flashcard assistant.
+Source Term: "${sourceText}" (Language: ${termLangLabel})
+Target Definition Language: ${defLangLabel}
+
+Return strictly valid JSON with this exact schema:
+{
+  "autocomplete": "If the source term has a typo or looks incomplete, provide the corrected/completed word or phrase in ${termLangLabel}; otherwise empty string ''",
+  "suggestions": [
+    "3 to 4 concise, accurate definitions/translations in ${defLangLabel} (include brief part-of-speech like (n.) or (v.) when helpful, keep each item short enough for a flashcard)"
+  ]
+}`
+          : `You are a concise bilingual flashcard assistant.
+Given Definition: "${sourceText}" (Language: ${defLangLabel})
+Target Term Language: ${termLangLabel}
+
+Return strictly valid JSON with this exact schema:
+{
+  "autocomplete": "",
+  "suggestions": [
+    "3 to 4 concise matching terms/words/phrases in ${termLangLabel}"
+  ]
+}`;
+
+        try {
+          const res = await callGemini({ parts: [{ text: prompt }], expectJson: true });
+          state.editor.suggestionsByCardId[cardId] = {
+            loading: false, error: "", direction,
+            autocomplete: typeof res.autocomplete === "string" ? res.autocomplete.trim() : "",
+            items: Array.isArray(res.suggestions) ? res.suggestions.slice(0, 4).map(String) : []
+          };
+        } catch (err) {
+          state.editor.suggestionsByCardId[cardId] = {
+            loading: false, direction, autocomplete: "", items: [],
+            error: err.message === "MISSING_KEY" ? "Add your Gemini API key in Settings (⚙️) to use AI suggestions." : err.message
+          };
+        }
+        renderEditorSuggestions(cardId);
+      }
+
+      /* =====================================================================
+         5. ROUTER & HOME LIBRARY VIEW
+      ===================================================================== */
+      function render() {
+        const main = $("mainContainer");
+        if (state.view === "home") renderHome(main);
+        else if (state.view === "editor") renderEditor(main);
+        else if (state.view === "set") renderSetView(main);
+      }
+
+      function getSetMasteryStats(set) {
+        const total = set.cards.length;
+        const mastered = total ? set.cards.filter(c => (c.mastery || 0) >= 2).length : 0;
+        return { total, mastered, pct: total ? Math.round((mastered / total) * 100) : 0 };
+      }
+
+      function renderHome(container) {
+        const folders = Array.from(new Set(state.sets.map(s => (s.folder || "").trim()).filter(Boolean)));
+        const q = state.searchQuery.trim().toLowerCase();
+        const filtered = state.sets.filter(s => {
+          if (state.activeFolder !== "ALL" && (s.folder || "").trim() !== state.activeFolder) return false;
+          if (!q) return true;
+          return [s.title, s.description, s.folder].some(v => (v || "").toLowerCase().includes(q)) ||
+                 s.cards.some(c => c.term.toLowerCase().includes(q) || c.def.toLowerCase().includes(q));
+        });
+
+        container.innerHTML = `
+          <div class="home-hero">
+            <div>
+              <h1 class="home-title">Your Study Library</h1>
+              <p class="home-subtitle">${state.sets.length} study ${state.sets.length === 1 ? "set" : "sets"} stored locally on this device</p>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline-primary" id="homeScanBtn">${svgIcon("camera", 18)} Scan Photo with AI</button>
+              <button type="button" class="btn btn-primary" id="homeCreateBtn">${svgIcon("plus", 18)} New Set</button>
+            </div>
+          </div>
+
+          ${folders.length ? `
+            <div class="filter-pills" role="tablist" aria-label="Filter by folder">
+              <button type="button" class="pill ${state.activeFolder === "ALL" ? "active" : ""}" data-folder="ALL">All Sets (${state.sets.length})</button>
+              ${folders.map(f => `<button type="button" class="pill ${state.activeFolder === f ? "active" : ""}" data-folder="${escapeHtml(f)}">${escapeHtml(f)}</button>`).join("")}
+            </div>
+          ` : ""}
+
+          ${!filtered.length ? `
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary-text)" stroke-width="1.8"><rect x="3" y="4" width="18" height="14" rx="3"/><path d="M7 20h10"/></svg>
+              <h2 style="margin:0; font-size:1.25rem;">${!state.sets.length ? "No study sets yet" : "No matching sets found"}</h2>
+              <p style="margin:0; color:var(--text-muted); max-width:420px;">
+                ${!state.sets.length ? "Create your first flashcard set manually or snap a photo of textbook notes with AI." : "Try clearing your search or selecting another folder."}
+              </p>
+              <div style="display:flex; gap:10px; margin-top:6px; flex-wrap:wrap; justify-content:center;">
+                <button type="button" class="btn btn-primary" id="emptyCreateBtn">+ Create Study Set</button>
+                <button type="button" class="btn btn-secondary" id="emptyScanBtn">📷 Scan Photo with AI</button>
+              </div>
+            </div>
+          ` : `
+            <div class="sets-grid">
+              ${filtered.map(set => {
+                const stats = getSetMasteryStats(set);
+                return `
+                  <article class="set-card" data-set-id="${escapeHtml(set.id)}">
+                    <div class="set-card-badges">
+                      <span class="badge badge-primary">${stats.total} ${stats.total === 1 ? "term" : "terms"}</span>
+                      <span class="badge">${escapeHtml(getLangInfo(set.defLang).short)} → ${escapeHtml(getLangInfo(set.termLang).short)}</span>
+                      ${set.folder ? `<span class="badge badge-yellow">${escapeHtml(set.folder)}</span>` : ""}
+                    </div>
+                    <h2 class="set-card-title" data-open-set="${escapeHtml(set.id)}">${escapeHtml(set.title || "Untitled Set")}</h2>
+                    <p class="set-card-desc" style="${set.description ? "" : "opacity:.6;"}">${escapeHtml(set.description || "No description")}</p>
+                    <div class="progress-wrap">
+                      <div class="progress-label"><span>Mastery</span><span>${stats.mastered}/${stats.total} (${stats.pct}%)</span></div>
+                      <div class="progress-track"><div class="progress-fill" style="width:${stats.pct}%;"></div></div>
+                    </div>
+                    <div class="set-card-actions">
+                      <button type="button" class="btn btn-primary btn-sm btn-study" data-open-set="${escapeHtml(set.id)}">Study</button>
+                      <button type="button" class="btn btn-secondary btn-sm" data-edit-set="${escapeHtml(set.id)}" title="Edit set" aria-label="Edit set">${svgIcon("edit", 16)}</button>
+                      <button type="button" class="btn btn-danger btn-sm" data-delete-set="${escapeHtml(set.id)}" title="Delete set" aria-label="Delete set">${svgIcon("trash", 16)}</button>
+                    </div>
+                  </article>
+                `;
+              }).join("")}
+            </div>
+          `}
+        `;
+
+        container.querySelector("#homeScanBtn").onclick = () => openScannerModal(null);
+        container.querySelector("#homeCreateBtn").onclick = () => openEditor(null);
+        container.querySelector("#emptyCreateBtn")?.addEventListener("click", () => openEditor(null));
+        container.querySelector("#emptyScanBtn")?.addEventListener("click", () => openScannerModal(null));
+        container.querySelectorAll("[data-folder]").forEach(b => b.onclick = () => { state.activeFolder = b.dataset.folder; render(); });
+        container.querySelectorAll("[data-open-set]").forEach(el => el.onclick = () => openSetView(el.dataset.openSet));
+        container.querySelectorAll("[data-edit-set]").forEach(el => el.onclick = () => openEditor(el.dataset.editSet));
+        container.querySelectorAll("[data-delete-set]").forEach(el => el.onclick = async () => {
+          const s = getSetById(el.dataset.deleteSet);
+          if (s && await showConfirm("Delete Study Set", `Delete "${s.title}" and all ${s.cards.length} cards? This cannot be undone.`, "Delete")) {
+            state.sets = state.sets.filter(item => item.id !== s.id);
+            saveSets();
+            showToast("Study set deleted.");
+            render();
+          }
+        });
+      }
+
+      /* =====================================================================
+         6. SET EDITOR VIEW
+      ===================================================================== */
+      function openEditor(setId = null) {
+        const existing = setId ? getSetById(setId) : null;
+        state.editor = {
+          editingSetId: existing ? existing.id : null,
+          title: existing ? existing.title : "",
+          description: existing ? (existing.description || "") : "",
+          folder: existing ? (existing.folder || "") : "",
+          termLang: existing ? existing.termLang : "en-US",
+          defLang: existing ? existing.defLang : "zh-TW",
+          cards: existing ? existing.cards.map(c => ({ ...c })) : [makeCard(), makeCard(), makeCard()],
+          showBulkImport: false, bulkText: "", suggestionsByCardId: {}, debounceTimers: {}
+        };
+        state.view = "editor";
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function renderEditor(container) {
+        const ed = state.editor;
+        container.innerHTML = `
+          <div class="set-top-bar">
+            <div>
+              <button type="button" class="btn btn-ghost btn-sm" id="btnEditorBack" style="padding-left:0; margin-bottom:4px;">${svgIcon("back", 18)} Back</button>
+              <h1 class="home-title">${ed.editingSetId ? "Edit Study Set" : "Create a New Study Set"}</h1>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline-primary" id="btnEditorScan">${svgIcon("camera", 18)} Scan Photo into Set</button>
+              <button type="button" class="btn btn-primary" id="btnSaveSetTop">Save Set</button>
+            </div>
+          </div>
+
+          <section class="panel" style="margin-bottom:18px;">
+            <div class="form-grid" style="margin-bottom:14px;">
+              <div class="form-group">
+                <label class="form-label" for="edTitle">Set Title</label>
+                <input id="edTitle" class="input" type="text" placeholder="e.g., Biology Chapter 4, TOEIC Vocabulary" value="${escapeHtml(ed.title)}" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="edFolder">Folder / Tag (Optional)</label>
+                <input id="edFolder" class="input" type="text" placeholder="e.g., English, JLPT N3, Medicine" value="${escapeHtml(ed.folder)}" />
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+              <label class="form-label" for="edDesc">Description (Optional)</label>
+              <input id="edDesc" class="input" type="text" placeholder="Add a short note about this study set..." value="${escapeHtml(ed.description)}" />
+            </div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label" for="edTermLang">Default Term Language (Target Word)</label>
+                <select id="edTermLang" class="select">${langOpts(ed.termLang)}</select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="edDefLang">Default Definition Language (Meaning/Prompt)</label>
+                <select id="edDefLang" class="select">${langOpts(ed.defLang)}</select>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:16px; padding-top:14px; border-top:1px solid var(--border);">
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnSwapAllCards">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg>
+                  Swap All Terms ↔ Definitions
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btnToggleBulk">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                  + Import from text
+                </button>
+              </div>
+              <label class="switch-label" title="Automatically fetch Gemini suggestions 800ms after typing a term (uses API tokens)">
+                <input type="checkbox" class="switch-input" id="chkAutoSuggest" ${state.prefs.autoSuggest ? "checked" : ""} />
+                <span class="switch"></span><span>Auto-suggest after pause</span>
+              </label>
+            </div>
+
+            ${ed.showBulkImport ? `
+              <div style="margin-top:14px; padding:14px; background:var(--surface-secondary); border-radius:var(--radius-md); border:1px solid var(--border);">
+                <label class="form-label" for="bulkImportText">Paste Cards (One per line: "term - definition" or tab-separated)</label>
+                <textarea id="bulkImportText" class="textarea" style="margin-top:6px;" placeholder="resilient - 有韌性的&#10;ubiquitous&#9;無所不在的">${escapeHtml(ed.bulkText)}</textarea>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnBulkCancel">Close</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="btnBulkApply">Import Lines</button>
+                </div>
+              </div>
+            ` : ""}
+          </section>
+
+          <div id="editorCardsList" style="display:flex; flex-direction:column; gap:14px;"></div>
+
+          <div style="margin-top:16px; display:flex; flex-direction:column; gap:12px;">
+            <button type="button" id="btnAddCard" class="panel" style="width:100%; justify-content:center; font-weight:700; color:var(--primary-text); border:2px dashed var(--border-strong); min-height:58px;">+ Add Card</button>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+              <button type="button" class="btn btn-secondary" id="btnCancelSetBottom">Cancel</button>
+              <button type="button" class="btn btn-primary" id="btnSaveSetBottom">Save Study Set (${ed.cards.length} cards)</button>
+            </div>
+          </div>
+        `;
+
+        const goBack = () => {
+          state.view = ed.editingSetId ? "set" : "home";
+          if (ed.editingSetId) state.study.setId = ed.editingSetId;
+          render();
+        };
+        container.querySelector("#btnEditorBack").onclick = goBack;
+        container.querySelector("#btnCancelSetBottom").onclick = goBack;
+        container.querySelector("#btnSaveSetTop").onclick = saveEditorSet;
+        container.querySelector("#btnSaveSetBottom").onclick = saveEditorSet;
+        container.querySelector("#btnEditorScan").onclick = () => openScannerModal("EDITOR");
+        container.querySelector("#edTitle").oninput = (e) => { ed.title = e.target.value; };
+        container.querySelector("#edFolder").oninput = (e) => { ed.folder = e.target.value; };
+        container.querySelector("#edDesc").oninput = (e) => { ed.description = e.target.value; };
+        container.querySelector("#edTermLang").onchange = (e) => { ed.termLang = e.target.value; renderEditorCards(); };
+        container.querySelector("#edDefLang").onchange = (e) => { ed.defLang = e.target.value; renderEditorCards(); };
+        container.querySelector("#chkAutoSuggest").onchange = (e) => {
+          state.prefs.autoSuggest = e.target.checked;
+          savePrefs();
+          showToast(e.target.checked ? "Auto-suggest after 800ms pause ON" : "Auto-suggest OFF (manual ✨ button active)");
+        };
+        container.querySelector("#btnSwapAllCards").onclick = () => {
+          [ed.termLang, ed.defLang] = [ed.defLang, ed.termLang];
+          ed.cards.forEach(c => { [c.term, c.def] = [c.def, c.term]; });
+          ed.suggestionsByCardId = {};
+          render();
+          showToast("Swapped all terms and definitions.");
+        };
+        container.querySelector("#btnToggleBulk").onclick = () => { ed.showBulkImport = !ed.showBulkImport; render(); };
+
+        if (ed.showBulkImport) {
+          container.querySelector("#bulkImportText").oninput = (e) => { ed.bulkText = e.target.value; };
+          container.querySelector("#btnBulkCancel").onclick = () => { ed.showBulkImport = false; render(); };
+          container.querySelector("#btnBulkApply").onclick = () => {
+            const lines = ed.bulkText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (!lines.length) return showToast("Paste at least one line first.", "error");
+            const parsed = lines.map(line => {
+              const sep = line.includes("\t") ? "\t" : line.includes(" - ") ? " - " : line.includes(":") ? ":" : null;
+              if (!sep) return makeCard(line, "");
+              const idx = line.indexOf(sep);
+              return makeCard(line.slice(0, idx).trim(), line.slice(idx + sep.length).trim());
+            }).filter(c => c.term || c.def);
+            if (parsed.length) {
+              while (ed.cards.length && !ed.cards[ed.cards.length - 1].term.trim() && !ed.cards[ed.cards.length - 1].def.trim()) ed.cards.pop();
+              ed.cards.push(...parsed);
+              ed.bulkText = "";
+              ed.showBulkImport = false;
+              render();
+              showToast(`Imported ${parsed.length} cards!`, "success");
+            }
+          };
+        }
+
+        container.querySelector("#btnAddCard").onclick = () => addEditorCard(true);
+        renderEditorCards();
+      }
+
+      function addEditorCard(focusNew = false) {
+        const newCard = makeCard();
+        state.editor.cards.push(newCard);
+        renderEditorCards();
+        const saveBtn = $("btnSaveSetBottom");
+        if (saveBtn) saveBtn.textContent = `Save Study Set (${state.editor.cards.length} cards)`;
+        if (focusNew) document.querySelector(`[data-term-input="${newCard.id}"]`)?.focus();
+      }
+
+      function renderEditorCards() {
+        const listEl = $("editorCardsList");
+        if (!listEl) return;
+        const ed = state.editor;
+        const termLangAttr = ed.termLang === "auto" ? "" : `lang="${escapeHtml(ed.termLang)}"`;
+        const defLangAttr = ed.defLang === "auto" ? "" : `lang="${escapeHtml(ed.defLang)}"`;
+
+        listEl.innerHTML = ed.cards.map((card, idx) => `
+          <div class="card-editor-row" data-card-row="${escapeHtml(card.id)}">
+            <div class="card-editor-header">
+              <span class="card-num">${idx + 1}</span>
+              <div class="card-row-tools">
+                <button type="button" class="btn-ghost btn-sm star-btn ${card.starred ? "starred" : ""}" data-card-star="${escapeHtml(card.id)}" title="Star card">${svgIcon("star", 18, card.starred)}</button>
+                <button type="button" class="btn-ghost btn-sm" data-card-up="${escapeHtml(card.id)}" ${idx === 0 ? "disabled" : ""} title="Move up" aria-label="Move card up">${svgIcon("up", 18)}</button>
+                <button type="button" class="btn-ghost btn-sm" data-card-down="${escapeHtml(card.id)}" ${idx === ed.cards.length - 1 ? "disabled" : ""} title="Move down" aria-label="Move card down">${svgIcon("down", 18)}</button>
+                <button type="button" class="btn-ghost btn-sm" data-card-del="${escapeHtml(card.id)}" title="Delete card" aria-label="Delete card" style="color:var(--orange);">${svgIcon("trash", 18)}</button>
+              </div>
+            </div>
+            <div class="card-editor-fields">
+              <div class="field-wrap">
+                <div class="field-input-row">
+                  <input type="text" class="line-input" ${termLangAttr} data-term-input="${escapeHtml(card.id)}" value="${escapeHtml(card.term)}" placeholder="Enter term..." />
+                  <button type="button" class="btn-ghost btn-sm speak-btn" data-speak-term="${escapeHtml(card.id)}" title="Listen to term" aria-label="Speak term">${svgIcon("speaker", 18)}</button>
+                  <button type="button" class="suggest-btn" data-suggest-term="${escapeHtml(card.id)}" title="Suggest Term from Definition">✨</button>
+                </div>
+                <div class="field-caption"><span>TERM (${escapeHtml(getLangInfo(ed.termLang).short)})</span></div>
+              </div>
+              <div class="field-wrap">
+                <div class="field-input-row">
+                  <input type="text" class="line-input" ${defLangAttr} data-def-input="${escapeHtml(card.id)}" value="${escapeHtml(card.def)}" placeholder="Enter definition..." />
+                  <button type="button" class="btn-ghost btn-sm speak-btn" data-speak-def="${escapeHtml(card.id)}" title="Listen to definition" aria-label="Speak definition">${svgIcon("speaker", 18)}</button>
+                  <button type="button" class="suggest-btn" data-suggest-def="${escapeHtml(card.id)}" title="AI Suggest Definition">✨ Suggest</button>
+                </div>
+                <div class="field-caption"><span>DEFINITION (${escapeHtml(getLangInfo(ed.defLang).short)})</span></div>
+              </div>
+            </div>
+            <div id="suggestions_${escapeHtml(card.id)}"></div>
+          </div>
+        `).join("");
+
+        ed.cards.forEach((card, idx) => {
+          const termInp = listEl.querySelector(`[data-term-input="${card.id}"]`);
+          const defInp = listEl.querySelector(`[data-def-input="${card.id}"]`);
+
+          termInp.oninput = (e) => {
+            card.term = e.target.value;
+            if (state.prefs.autoSuggest) {
+              clearTimeout(ed.debounceTimers[card.id]);
+              if (card.term.trim().length >= 2 && !card.def.trim()) {
+                ed.debounceTimers[card.id] = setTimeout(() => requestCardSuggestions(card.id, "termToDef"), 800);
+              }
+            }
+          };
+          termInp.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); defInp.focus(); } };
+          defInp.oninput = (e) => { card.def = e.target.value; };
+          defInp.onkeydown = (e) => {
+            if (e.key === "Enter" || (e.key === "Tab" && !e.shiftKey && idx === ed.cards.length - 1)) {
+              if (idx === ed.cards.length - 1) { e.preventDefault(); addEditorCard(true); }
+              else if (e.key === "Enter") { e.preventDefault(); listEl.querySelector(`[data-term-input="${ed.cards[idx + 1].id}"]`)?.focus(); }
+            }
+          };
+
+          listEl.querySelector(`[data-card-star="${card.id}"]`).onclick = () => { card.starred = !card.starred; renderEditorCards(); };
+          listEl.querySelector(`[data-card-up="${card.id}"]`).onclick = () => {
+            if (idx > 0) { [ed.cards[idx - 1], ed.cards[idx]] = [ed.cards[idx], ed.cards[idx - 1]]; renderEditorCards(); }
+          };
+          listEl.querySelector(`[data-card-down="${card.id}"]`).onclick = () => {
+            if (idx < ed.cards.length - 1) { [ed.cards[idx + 1], ed.cards[idx]] = [ed.cards[idx], ed.cards[idx + 1]]; renderEditorCards(); }
+          };
+          listEl.querySelector(`[data-card-del="${card.id}"]`).onclick = () => {
+            if (ed.cards.length <= 1) { card.term = card.def = ""; return renderEditorCards(); }
+            ed.cards.splice(idx, 1);
+            renderEditorCards();
+            const saveBtn = $("btnSaveSetBottom");
+            if (saveBtn) saveBtn.textContent = `Save Study Set (${ed.cards.length} cards)`;
+          };
+          listEl.querySelector(`[data-speak-term="${card.id}"]`).onclick = (e) => speakText(card.term, ed.termLang, e.currentTarget);
+          listEl.querySelector(`[data-speak-def="${card.id}"]`).onclick = (e) => speakText(card.def, ed.defLang, e.currentTarget);
+          listEl.querySelector(`[data-suggest-def="${card.id}"]`).onclick = () => requestCardSuggestions(card.id, "termToDef");
+          listEl.querySelector(`[data-suggest-term="${card.id}"]`).onclick = () => requestCardSuggestions(card.id, "defToTerm");
+          renderEditorSuggestions(card.id);
+        });
+      }
+
+      function renderEditorSuggestions(cardId) {
+        const trayHost = $(`suggestions_${cardId}`);
+        const sug = state.editor.suggestionsByCardId[cardId];
+        if (!trayHost) return;
+        if (!sug) { trayHost.innerHTML = ""; return; }
+
+        if (sug.loading) {
+          trayHost.innerHTML = `<div class="suggestions-tray"><div class="spinner" style="color:var(--primary-text);"></div><span style="font-size:.86rem; color:var(--text-muted); font-weight:600;">Asking Gemini for concise suggestions...</span></div>`;
+          return;
+        }
+        if (sug.error) {
+          trayHost.innerHTML = `
+            <div class="suggestions-tray" style="border-color:var(--orange); background:var(--orange-soft); color:var(--orange); justify-content:space-between;">
+              <span style="font-size:.86rem; font-weight:600; flex:1 1 200px;">${escapeHtml(sug.error)}</span>
+              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-primary btn-sm" data-retry-sug="${escapeHtml(cardId)}">↻ Recall AI</button>
+                <button type="button" class="btn-ghost btn-sm" data-dismiss-sug="${escapeHtml(cardId)}">Dismiss</button>
+              </div>
+            </div>`;
+          trayHost.querySelector("[data-retry-sug]").onclick = () => requestCardSuggestions(cardId, sug.direction || "termToDef");
+          trayHost.querySelector("[data-dismiss-sug]").onclick = () => { delete state.editor.suggestionsByCardId[cardId]; renderEditorSuggestions(cardId); };
+          return;
+        }
+        if (!sug.autocomplete && !sug.items?.length) { trayHost.innerHTML = ""; return; }
+
+        trayHost.innerHTML = `
+          <div class="suggestions-tray">
+            <span style="font-size:.78rem; font-weight:800; color:var(--primary-text); text-transform:uppercase;">✨ AI Picks:</span>
+            ${sug.autocomplete ? `<button type="button" class="suggest-chip suggest-chip-fix" data-apply-auto="${escapeHtml(cardId)}">Fix term → <strong>${escapeHtml(sug.autocomplete)}</strong></button>` : ""}
+            ${sug.items.map((item, i) => `<button type="button" class="suggest-chip" data-apply-sug="${i}">${escapeHtml(item)}</button>`).join("")}
+            <button type="button" class="btn-ghost btn-sm" style="margin-left:auto;" data-close-sug="${escapeHtml(cardId)}" aria-label="Close suggestions">✕</button>
+          </div>
+        `;
+
+        const card = state.editor.cards.find(c => c.id === cardId);
+        if (!card) return;
+
+        trayHost.querySelector(`[data-apply-auto="${cardId}"]`)?.addEventListener("click", () => {
+          card.term = sug.autocomplete;
+          const inp = document.querySelector(`[data-term-input="${cardId}"]`);
+          if (inp) inp.value = sug.autocomplete;
+          sug.autocomplete = "";
+          renderEditorSuggestions(cardId);
+        });
+        trayHost.querySelectorAll("[data-apply-sug]").forEach(btn => btn.onclick = () => {
+          const val = sug.items[Number(btn.dataset.applySug)];
+          const isTerm = sug.direction === "defToTerm";
+          card[isTerm ? "term" : "def"] = val;
+          const inp = document.querySelector(`[data-${isTerm ? "term" : "def"}-input="${cardId}"]`);
+          if (inp) inp.value = val;
+          delete state.editor.suggestionsByCardId[cardId];
+          renderEditorSuggestions(cardId);
+        });
+        trayHost.querySelector("[data-close-sug]").onclick = () => { delete state.editor.suggestionsByCardId[cardId]; renderEditorSuggestions(cardId); };
+      }
+
+      function saveEditorSet() {
+        const ed = state.editor;
+        const cleanTitle = ed.title.trim() || "Untitled Study Set";
+        const validCards = ed.cards.map(c => ({ ...c, term: c.term.trim(), def: c.def.trim() })).filter(c => c.term || c.def);
+        if (!validCards.length) return showToast("Please add at least one card with a term or definition.", "error");
+
+        const payload = {
+          title: cleanTitle, description: ed.description.trim(), folder: ed.folder.trim(),
+          termLang: ed.termLang, defLang: ed.defLang, updatedAt: Date.now(), cards: validCards
+        };
+        let targetId = ed.editingSetId;
+        if (targetId) {
+          const idx = state.sets.findIndex(s => s.id === targetId);
+          if (idx !== -1) state.sets[idx] = { ...state.sets[idx], ...payload };
+          showToast("Study set updated!", "success");
+        } else {
+          targetId = uid();
+          state.sets.unshift({ id: targetId, createdAt: Date.now(), ...payload });
+          showToast("Study set created!", "success");
+        }
+        saveSets();
+        openSetView(targetId);
+      }
+
+      /* =====================================================================
+         7. STUDY VIEW (FLASHCARDS, LEARN, TEST & TERMS LIST)
+      ===================================================================== */
+      function openSetView(setId, mode = "flashcards") {
+        const set = getSetById(setId);
+        if (!set) { state.view = "home"; return render(); }
+        Object.assign(state.study, { setId, mode, starredOnly: false });
+        initFlashcardsDeck(set);
+        initLearnSession(set);
+        initTestSetup(set);
+        state.view = "set";
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function getActiveStudyCards(set) {
+        if (!set) return [];
+        return state.study.starredOnly ? set.cards.filter(c => c.starred) : set.cards;
+      }
+
+      function renderSetView(container) {
+        const set = getSetById(state.study.setId);
+        if (!set) { state.view = "home"; return render(); }
+
+        const starredCount = set.cards.filter(c => c.starred).length;
+        const activeCards = getActiveStudyCards(set);
+
+        container.innerHTML = `
+          <div class="set-top-bar">
+            <div>
+              <button type="button" class="btn btn-ghost btn-sm" id="btnSetBack" style="padding-left:0; margin-bottom:4px;">${svgIcon("back", 18)} Library</button>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                <span class="badge badge-primary">${set.cards.length} terms</span>
+                <span class="badge">${escapeHtml(getLangInfo(set.defLang).short)} → ${escapeHtml(getLangInfo(set.termLang).short)}</span>
+                ${set.folder ? `<span class="badge badge-yellow">${escapeHtml(set.folder)}</span>` : ""}
+              </div>
+              <h1 class="home-title">${escapeHtml(set.title)}</h1>
+              ${set.description ? `<p class="home-subtitle">${escapeHtml(set.description)}</p>` : ""}
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline-primary btn-sm" id="btnSetScanAdd">📷 Scan &amp; Add</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btnSetEdit">Edit Set</button>
+            </div>
+          </div>
+
+          <div class="mode-tabs" role="tablist" aria-label="Study modes">
+            <button type="button" class="mode-tab ${state.study.mode === "flashcards" ? "active" : ""}" data-study-mode="flashcards">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="16" height="14" rx="2"/><path d="M22 9v8a2 2 0 0 1-2 2H8"/></svg> Flashcards
+            </button>
+            <button type="button" class="mode-tab ${state.study.mode === "learn" ? "active" : ""}" data-study-mode="learn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Learn
+            </button>
+            <button type="button" class="mode-tab ${state.study.mode === "test" ? "active" : ""}" data-study-mode="test">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Test
+            </button>
+          </div>
+
+          <div class="study-toolbar">
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="pill ${!state.study.starredOnly ? "active" : ""}" id="btnFilterAll">Study All (${set.cards.length})</button>
+              <button type="button" class="pill ${state.study.starredOnly ? "active" : ""}" id="btnFilterStarred" ${starredCount === 0 ? "disabled" : ""}>★ Starred Only (${starredCount})</button>
+            </div>
+            <span style="font-size:.84rem; color:var(--text-muted); font-weight:600;">${activeCards.length} active ${activeCards.length === 1 ? "card" : "cards"}</span>
+          </div>
+
+          <div id="studyModeStage"></div>
+
+          <section class="terms-preview-section">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+              <h2 style="margin:0; font-size:1.2rem; font-weight:800;">Terms in this set (${set.cards.length})</h2>
+              <button type="button" class="btn btn-secondary btn-sm" id="btnResetSetMastery">Reset Mastery Progress</button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              ${set.cards.map(c => `
+                <div class="term-row-card">
+                  <div style="font-weight:700; display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                    <span lang="${escapeHtml(set.termLang)}">${escapeHtml(c.term)}</span>
+                    <button type="button" class="btn-ghost btn-sm speak-btn" data-list-speak-term="${escapeHtml(c.id)}" aria-label="Speak term">${svgIcon("speaker", 17)}</button>
+                  </div>
+                  <div style="color:var(--text-muted); display:flex; align-items:center; gap:8px; justify-content:space-between;">
+                    <span lang="${escapeHtml(set.defLang)}">${escapeHtml(c.def)}</span>
+                    <button type="button" class="btn-ghost btn-sm speak-btn" data-list-speak-def="${escapeHtml(c.id)}" aria-label="Speak definition">${svgIcon("speaker", 17)}</button>
+                  </div>
+                  <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end;">
+                    ${(c.mastery || 0) >= 2 ? `<span class="badge badge-green">Mastered</span>` : c.mastery === 1 ? `<span class="badge badge-primary">Learning</span>` : `<span class="badge">New</span>`}
+                    <button type="button" class="btn-ghost btn-sm star-btn ${c.starred ? "starred" : ""}" data-list-star="${escapeHtml(c.id)}" aria-label="Star card">${svgIcon("star", 18, c.starred)}</button>
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </section>
+        `;
+
+        container.querySelector("#btnSetBack").onclick = () => { state.view = "home"; render(); };
+        container.querySelector("#btnSetEdit").onclick = () => openEditor(set.id);
+        container.querySelector("#btnSetScanAdd").onclick = () => openScannerModal(set.id);
+        container.querySelectorAll("[data-study-mode]").forEach(b => b.onclick = () => {
+          state.study.mode = b.dataset.studyMode;
+          if (state.study.mode === "learn") initLearnSession(set);
+          if (state.study.mode === "test") initTestSetup(set);
+          render();
+        });
+
+        const setStarFilter = (val) => {
+          if (val && starredCount === 0) return;
+          state.study.starredOnly = val;
+          initFlashcardsDeck(set);
+          initLearnSession(set);
+          initTestSetup(set);
+          render();
+        };
+        container.querySelector("#btnFilterAll").onclick = () => setStarFilter(false);
+        container.querySelector("#btnFilterStarred").onclick = () => setStarFilter(true);
+
+        container.querySelector("#btnResetSetMastery").onclick = async () => {
+          if (await showConfirm("Reset Progress", "Reset mastery levels for all cards in this set back to New?", "Reset", false)) {
+            set.cards.forEach(c => { c.mastery = 0; });
+            saveSets();
+            initLearnSession(set);
+            render();
+            showToast("Progress reset.");
+          }
+        };
+
+        container.querySelectorAll("[data-list-speak-term]").forEach(b => b.onclick = () => {
+          const c = set.cards.find(x => x.id === b.dataset.listSpeakTerm);
+          if (c) speakText(c.term, set.termLang, b);
+        });
+        container.querySelectorAll("[data-list-speak-def]").forEach(b => b.onclick = () => {
+          const c = set.cards.find(x => x.id === b.dataset.listSpeakDef);
+          if (c) speakText(c.def, set.defLang, b);
+        });
+        container.querySelectorAll("[data-list-star]").forEach(b => b.onclick = () => {
+          const c = set.cards.find(x => x.id === b.dataset.listStar);
+          if (!c) return;
+          c.starred = !c.starred;
+          saveSets();
+          if (state.study.starredOnly && !set.cards.some(x => x.starred)) {
+            state.study.starredOnly = false;
+            initFlashcardsDeck(set);
+          }
+          render();
+        });
+
+        const stage = container.querySelector("#studyModeStage");
+        if (state.study.mode === "flashcards") renderFlashcardsMode(stage, set);
+        else if (state.study.mode === "learn") renderLearnMode(stage, set);
+        else renderTestMode(stage, set);
+      }
+
+      /* ---------------- 7A. FLASHCARDS MODE ---------------- */
+      function initFlashcardsDeck(set, customIds = null, shuffled = false) {
+        const ids = customIds || getActiveStudyCards(set).map(c => c.id);
+        Object.assign(state.study.fc, {
+          deckIds: shuffled ? shuffleArray(ids) : ids,
+          index: 0, flipped: false, knowIds: [], learningIds: [], finished: false
+        });
+      }
+
+      function renderFlashcardsMode(stage, set) {
+        const fc = state.study.fc;
+        if (!fc.deckIds.length) { stage.innerHTML = `<div class="empty-state"><p>No cards available in this filter.</p></div>`; return; }
+
+        if (fc.finished) {
+          const total = fc.deckIds.length, knowCount = fc.knowIds.length, learnCount = fc.learningIds.length;
+          const pct = total ? Math.round((knowCount / total) * 100) : 0;
+          stage.innerHTML = `
+            <div class="study-card-box" style="text-align:center;">
+              <div class="score-circle" style="border-color:var(--green); color:var(--green); background:var(--green-soft);">${pct}%</div>
+              <h2 style="margin:0 0 6px; font-size:1.45rem;">Round Complete!</h2>
+              <p style="margin:0 0 18px; color:var(--text-muted);">Great work reviewing ${total} ${total === 1 ? "card" : "cards"}.</p>
+              <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-bottom:22px;">
+                <span class="badge badge-green" style="font-size:.95rem; padding:8px 16px;">✓ Know: ${knowCount}</span>
+                <span class="badge" style="font-size:.95rem; padding:8px 16px; background:var(--orange-soft); color:var(--orange); border-color:transparent;">✕ Still Learning: ${learnCount}</span>
+              </div>
+              <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                ${learnCount > 0 ? `<button type="button" class="btn btn-primary" id="btnFcStudyLearning">Study Still Learning Cards Only (${learnCount})</button>` : ""}
+                <button type="button" class="btn btn-secondary" id="btnFcRestart">Restart Full Deck</button>
+              </div>
+            </div>
+          `;
+          stage.querySelector("#btnFcStudyLearning")?.addEventListener("click", () => { initFlashcardsDeck(set, [...fc.learningIds], false); render(); });
+          stage.querySelector("#btnFcRestart").onclick = () => { initFlashcardsDeck(set); render(); };
+          return;
+        }
+
+        const card = set.cards.find(c => c.id === fc.deckIds[fc.index]);
+        if (!card) { initFlashcardsDeck(set); return render(); }
+
+        const frontText = fc.swapFrontBack ? card.def : card.term;
+        const backText = fc.swapFrontBack ? card.term : card.def;
+        const frontLang = fc.swapFrontBack ? set.defLang : set.termLang;
+        const backLang = fc.swapFrontBack ? set.termLang : set.defLang;
+        const pct = Math.round(((fc.index + 1) / fc.deckIds.length) * 100);
+
+        const faceHtml = (isBack, label, lang, text, speakId, starId, hint) => `
+          <div class="flashcard-face ${isBack ? "flashcard-face-back" : ""}">
+            <div class="flashcard-face-top">
+              <span class="flashcard-side-label">${label} (${escapeHtml(getLangInfo(lang).short)})</span>
+              <div class="flashcard-face-tools">
+                <button type="button" class="btn-ghost btn-sm speak-btn" id="${speakId}" data-no-flip="1" aria-label="Speak ${label.toLowerCase()}">${svgIcon("speaker", 20)}</button>
+                <button type="button" class="btn-ghost btn-sm star-btn ${card.starred ? "starred" : ""}" id="${starId}" data-no-flip="1" aria-label="Star card">${svgIcon("star", 20, card.starred)}</button>
+              </div>
+            </div>
+            <div class="flashcard-content" lang="${escapeHtml(lang)}">${escapeHtml(text)}</div>
+            <div class="flashcard-hint">${hint}</div>
+          </div>`;
+
+        stage.innerHTML = `
+          <div class="flashcard-controls" style="margin-bottom:12px;">
+            <div class="progress-wrap">
+              <div class="progress-label">
+                <span>Card ${fc.index + 1} of ${fc.deckIds.length}</span>
+                ${fc.trackProgress ? `<span>✓ ${fc.knowIds.length} Know &nbsp;•&nbsp; ✕ ${fc.learningIds.length} Learning</span>` : `<span>${pct}%</span>`}
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:${pct}%; background:var(--primary);"></div></div>
+            </div>
+          </div>
+
+          <div class="flashcard-stage" id="flashcardStage">
+            <div class="flashcard-3d ${fc.flipped ? "is-flipped" : ""}" id="flashcard3d" tabindex="0" role="button" aria-label="Flashcard, tap or press Space to flip">
+              ${faceHtml(false, fc.swapFrontBack ? "Definition" : "Term", frontLang, frontText, "fcSpeakFront", "fcStarFront", "Tap card or press Space to flip • Swipe left/right on mobile")}
+              ${faceHtml(true, fc.swapFrontBack ? "Term" : "Definition", backLang, backText, "fcSpeakBack", "fcStarBack", "Shortcuts: Space flip • ←/→ rate • S star • A audio")}
+            </div>
+          </div>
+
+          <div class="flashcard-controls">
+            <div class="fc-nav-row">
+              ${fc.trackProgress ? `
+                <button type="button" class="btn-still-learning" id="btnFcLearning">✕ Still Learning</button>
+                <button type="button" class="btn-know" id="btnFcKnow">✓ Know</button>
+              ` : `
+                <button type="button" class="btn btn-secondary" id="btnFcPrev" ${fc.index === 0 ? "disabled" : ""} style="flex:1; max-width:200px;">← Previous</button>
+                <button type="button" class="btn btn-primary" id="btnFcNext" style="flex:1; max-width:200px;">Next →</button>
+              `}
+            </div>
+            <div class="fc-meta-row panel" style="padding:10px 14px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnFcShuffle">🔀 Shuffle</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btnFcSwap">${fc.swapFrontBack ? "Front: Definition → Recall Term" : "Front: Term → Recall Def"}</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btnFcResetDeck">↺ Reset</button>
+              </div>
+              <div style="display:flex; gap:14px; flex-wrap:wrap;">
+                <label class="switch-label" style="min-height:36px; font-size:.84rem;">
+                  <input type="checkbox" class="switch-input" id="chkFcTrack" ${fc.trackProgress ? "checked" : ""} />
+                  <span class="switch"></span><span>Track Progress</span>
+                </label>
+                <label class="switch-label" style="min-height:36px; font-size:.84rem;">
+                  <input type="checkbox" class="switch-input" id="chkFcAutoAudio" ${fc.autoPlayAudio ? "checked" : ""} />
+                  <span class="switch"></span><span>Auto-Play Audio</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        `;
+
+        const cardEl = stage.querySelector("#flashcard3d");
+        const advanceCard = (status = null) => {
+          if (fc.trackProgress && status) {
+            const add = status === "know" ? fc.knowIds : fc.learningIds;
+            const remKey = status === "know" ? "learningIds" : "knowIds";
+            if (!add.includes(card.id)) add.push(card.id);
+            fc[remKey] = fc[remKey].filter(id => id !== card.id);
+          }
+          if (fc.index + 1 >= fc.deckIds.length) fc.finished = true;
+          else { fc.index++; fc.flipped = false; }
+          render();
+          if (!fc.finished && fc.autoPlayAudio) {
+            const nextCard = set.cards.find(c => c.id === fc.deckIds[fc.index]);
+            if (nextCard) speakText(fc.swapFrontBack ? nextCard.def : nextCard.term, fc.swapFrontBack ? set.defLang : set.termLang);
+          }
+        };
+
+        cardEl.onclick = (e) => {
+          if (e.target.closest("[data-no-flip]")) return;
+          fc.flipped = !fc.flipped;
+          cardEl.classList.toggle("is-flipped", fc.flipped);
+          if (fc.autoPlayAudio) speakText(fc.flipped ? backText : frontText, fc.flipped ? backLang : frontLang);
+        };
+
+        let tx = 0, ty = 0;
+        cardEl.addEventListener("touchstart", (e) => {
+          if (!e.target.closest("[data-no-flip]")) { tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY; }
+        }, { passive: true });
+        cardEl.addEventListener("touchend", (e) => {
+          if (e.target.closest("[data-no-flip]")) return;
+          const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+          if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.25) {
+            if (dx > 0) { fc.trackProgress ? advanceCard("know") : fc.index > 0 && (fc.index--, fc.flipped = false, render()); }
+            else advanceCard(fc.trackProgress ? "learning" : null);
+          }
+        }, { passive: true });
+
+        stage.querySelector("#fcSpeakFront").onclick = (e) => { e.stopPropagation(); speakText(frontText, frontLang, e.currentTarget); };
+        stage.querySelector("#fcSpeakBack").onclick = (e) => { e.stopPropagation(); speakText(backText, backLang, e.currentTarget); };
+        const toggleStar = (e) => { e.stopPropagation(); card.starred = !card.starred; saveSets(); render(); };
+        stage.querySelector("#fcStarFront").onclick = toggleStar;
+        stage.querySelector("#fcStarBack").onclick = toggleStar;
+
+        if (fc.trackProgress) {
+          stage.querySelector("#btnFcLearning").onclick = () => advanceCard("learning");
+          stage.querySelector("#btnFcKnow").onclick = () => advanceCard("know");
+        } else {
+          stage.querySelector("#btnFcPrev").onclick = () => { if (fc.index > 0) { fc.index--; fc.flipped = false; render(); } };
+          stage.querySelector("#btnFcNext").onclick = () => advanceCard(null);
+        }
+
+        stage.querySelector("#btnFcShuffle").onclick = () => { initFlashcardsDeck(set, null, true); render(); showToast("Deck shuffled!"); };
+        stage.querySelector("#btnFcSwap").onclick = () => { fc.swapFrontBack = !fc.swapFrontBack; fc.flipped = false; render(); };
+        stage.querySelector("#btnFcResetDeck").onclick = () => { initFlashcardsDeck(set); render(); };
+        stage.querySelector("#chkFcTrack").onchange = (e) => { fc.trackProgress = e.target.checked; render(); };
+        stage.querySelector("#chkFcAutoAudio").onchange = (e) => { fc.autoPlayAudio = e.target.checked; };
+      }
+
+      /* ---------------- 7B. LEARN MODE ---------------- */
+      function initLearnSession(set) {
+        const active = getActiveStudyCards(set);
+        const unmastered = active.filter(c => (c.mastery || 0) < 2);
+        const roundIds = shuffleArray(unmastered.length ? unmastered : active).slice(0, 7).map(c => c.id);
+        Object.assign(state.study.learn, {
+          roundIds, queueIds: [...roundIds], currentCardId: null, questionType: "mc", mcOptions: [],
+          selectedOption: null, writtenInput: "", checkingAi: false, aiError: null, feedback: null,
+          roundCorrect: 0, roundAttempts: 0, roundComplete: false
+        });
+        prepareNextLearnQuestion(set);
+      }
+
+      function prepareNextLearnQuestion(set) {
+        const ln = state.study.learn;
+        if (!ln.queueIds.length) { ln.roundComplete = true; ln.currentCardId = null; return; }
+        const card = set.cards.find(c => c.id === ln.queueIds[0]);
+        if (!card) { ln.queueIds.shift(); return prepareNextLearnQuestion(set); }
+
+        Object.assign(ln, {
+          currentCardId: card.id, selectedOption: null, writtenInput: "", checkingAi: false, aiError: null, feedback: null,
+          questionType: (card.mastery || 0) === 0 ? "mc" : "written"
+        });
+        if (ln.questionType === "mc") {
+          const askDef = ln.promptSide === "term";
+          ln.mcOptions = buildMcOptions(set.cards, card.id, askDef, askDef ? card.def : card.term);
+        }
+      }
+
+      function renderLearnMode(stage, set) {
+        const ln = state.study.learn, active = getActiveStudyCards(set);
+        if (!active.length) { stage.innerHTML = `<div class="empty-state"><p>No cards available in this filter.</p></div>`; return; }
+
+        if (ln.roundComplete) {
+          const acc = ln.roundAttempts ? Math.round((ln.roundCorrect / ln.roundAttempts) * 100) : 100;
+          const remaining = active.filter(c => (c.mastery || 0) < 2).length;
+          stage.innerHTML = `
+            <div class="study-card-box" style="text-align:center;">
+              <div class="score-circle" style="border-color:var(--green); color:var(--green); background:var(--green-soft);">${acc}%</div>
+              <h2 style="margin:0 0 8px;">Round Mastered!</h2>
+              <p style="margin:0 0 18px; color:var(--text-muted);">${remaining > 0 ? `${remaining} more ${remaining === 1 ? "card" : "cards"} left to master in this set.` : "You have mastered every card in this set!"}</p>
+              <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                ${remaining > 0 ? `<button type="button" class="btn btn-primary" id="btnLearnContinue">Continue Next Round (${remaining} left)</button>` : ""}
+                <button type="button" class="btn btn-secondary" id="btnLearnRestart">Practice Another Round</button>
+              </div>
+            </div>
+          `;
+          stage.querySelector("#btnLearnContinue")?.addEventListener("click", () => { initLearnSession(set); render(); });
+          stage.querySelector("#btnLearnRestart").onclick = () => {
+            if (remaining === 0) { active.forEach(c => { c.mastery = 0; }); saveSets(); }
+            initLearnSession(set); render();
+          };
+          return;
+        }
+
+        const card = set.cards.find(c => c.id === ln.currentCardId);
+        if (!card) { initLearnSession(set); return render(); }
+
+        const askDef = ln.promptSide === "term";
+        const promptText = askDef ? card.term : card.def, answerText = askDef ? card.def : card.term;
+        const promptLang = askDef ? set.termLang : set.defLang, answerLang = askDef ? set.defLang : set.termLang;
+        const masteredInRound = ln.roundIds.filter(id => !ln.queueIds.includes(id)).length;
+        const pct = Math.round((masteredInRound / ln.roundIds.length) * 100);
+        const hasAiKey = Boolean((state.prefs.apiKey || "").trim());
+
+        stage.innerHTML = `
+          <div class="study-card-box">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:14px;">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span class="badge badge-primary">${ln.questionType === "mc" ? "Stage 1: Multiple Choice" : "Stage 2: Written"}</span>
+                <span class="badge">${masteredInRound}/${ln.roundIds.length} Mastered in Round</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                ${ln.questionType === "written" ? `
+                  <button type="button" class="btn btn-sm ${state.prefs.aiGrading && hasAiKey ? "btn-outline-primary" : "btn-secondary"}" id="btnToggleAiGrade" title="Use Gemini AI to judge synonyms and phrasing">
+                    ✨ AI Check: ${state.prefs.aiGrading && hasAiKey ? "ON" : hasAiKey ? "OFF" : "No Key"}
+                  </button>` : ""}
+                <button type="button" class="btn btn-secondary btn-sm" id="btnLearnSwapSide">${askDef ? "Ask: Term → Answer: Definition" : "Ask: Definition → Answer: Term"}</button>
+              </div>
+            </div>
+            <div class="progress-track" style="margin-bottom:20px;"><div class="progress-fill" style="width:${pct}%;"></div></div>
+
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:12px;">
+              <div>
+                <div class="field-caption" style="margin-bottom:6px;">${askDef ? "TERM" : "DEFINITION"} (${escapeHtml(getLangInfo(promptLang).short)})</div>
+                <div style="font-size:1.45rem; font-weight:700; line-height:1.35;" lang="${escapeHtml(promptLang)}">${escapeHtml(promptText)}</div>
+              </div>
+              <button type="button" class="btn-icon speak-btn" id="btnLearnSpeak" aria-label="Listen to prompt">${svgIcon("speaker", 20)}</button>
+            </div>
+
+            ${ln.questionType === "mc" ? `
+              <div class="mc-options-grid">
+                ${ln.mcOptions.map((opt, idx) => {
+                  let cls = "mc-option";
+                  if (ln.feedback) {
+                    if (normalizeAnswer(opt) === normalizeAnswer(answerText)) cls += " correct";
+                    else if (ln.selectedOption === idx) cls += " incorrect";
+                  }
+                  return `<button type="button" class="${cls}" data-mc-opt="${idx}" ${ln.feedback ? "disabled" : ""} lang="${escapeHtml(answerLang)}"><span class="mc-num">${idx + 1}</span><span>${escapeHtml(opt)}</span></button>`;
+                }).join("")}
+              </div>
+            ` : `
+              <form id="learnWrittenForm" style="margin-top:20px; display:flex; flex-direction:column; gap:12px;">
+                <label class="form-label" for="learnWrittenInput">Type the ${askDef ? "definition" : "word / term"} (${escapeHtml(getLangInfo(answerLang).short)})</label>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <input id="learnWrittenInput" class="input" type="text" lang="${escapeHtml(answerLang)}" value="${escapeHtml(ln.writtenInput)}" placeholder="Type your answer..." ${ln.feedback || ln.checkingAi ? "disabled" : ""} autocomplete="off" style="flex:1; min-width:200px;" />
+                  ${!ln.feedback ? `<button type="submit" class="btn btn-primary" ${ln.checkingAi ? "disabled" : ""}>${ln.checkingAi ? `<span class="spinner"></span> ✨ Checking...` : `Check Answer`}</button>` : ""}
+                </div>
+              </form>
+            `}
+
+            ${ln.aiError && !ln.feedback && !ln.checkingAi ? `
+              <div class="feedback-banner incorrect">
+                <div>
+                  <div>⚠️ AI Check failed: ${escapeHtml(ln.aiError.message)}</div>
+                  <div class="feedback-sub">Your progress wasn't penalized. Click Recall AI to try again, or grade locally.</div>
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-primary btn-sm" id="btnLearnRecallAi">↻ Recall AI</button>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnLearnFallbackLocal">Grade Locally</button>
+                </div>
+              </div>
+            ` : ""}
+
+            ${ln.feedback ? `
+              <div class="feedback-banner ${ln.feedback.correct ? "correct" : "incorrect"}">
+                <div>
+                  <div>${ln.feedback.correct
+                    ? `✓ Correct${ln.feedback.aiVerified ? " (✨ AI verified)" : ""}! ${(card.mastery || 0) >= 2 ? "Card mastered!" : "One more stage to master."}`
+                    : `✕ Not quite. Reference answer: <strong lang="${escapeHtml(answerLang)}">${escapeHtml(ln.feedback.rightAnswer)}</strong>`}</div>
+                  ${ln.feedback.aiNote ? `<div class="feedback-sub">✨ ${escapeHtml(ln.feedback.aiNote)}</div>` : ""}
+                </div>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  ${!ln.feedback.correct ? `<button type="button" class="btn btn-secondary btn-sm" id="btnLearnOverride">Override: I was right</button>` : ""}
+                  <button type="button" class="btn btn-primary btn-sm" id="btnLearnNext">Continue →</button>
+                </div>
+              </div>
+            ` : ""}
+          </div>
+        `;
+
+        stage.querySelector("#btnLearnSpeak").onclick = (e) => speakText(promptText, promptLang, e.currentTarget);
+        stage.querySelector("#btnToggleAiGrade")?.addEventListener("click", () => {
+          if (!hasAiKey) return openSettingsModal();
+          state.prefs.aiGrading = !state.prefs.aiGrading;
+          savePrefs(); render();
+          showToast(state.prefs.aiGrading ? "✨ AI Smart Grading enabled" : "AI Smart Grading disabled (local matching only)");
+        });
+        stage.querySelector("#btnLearnSwapSide").onclick = () => {
+          ln.promptSide = askDef ? "def" : "term";
+          prepareNextLearnQuestion(set); render();
+        };
+
+        const finalizeLearn = (isCorrect, userAnswer, aiVerified = false, aiNote = "") => {
+          ln.roundAttempts++;
+          if (isCorrect) { ln.roundCorrect++; card.mastery = Math.min(2, (card.mastery || 0) + 1); }
+          else card.mastery = Math.max(0, (card.mastery || 0) - 1);
+          saveSets();
+          ln.checkingAi = false;
+          ln.aiError = null;
+          ln.feedback = { correct: isCorrect, rightAnswer: answerText, userAnswer, aiVerified, aiNote };
+          render();
+        };
+
+        const submitWrittenForAi = async (val) => {
+          if (isLocallyAcceptable(val, answerText)) return finalizeLearn(true, val);
+          if (state.prefs.aiGrading && hasAiKey) {
+            ln.checkingAi = true;
+            ln.aiError = null;
+            render();
+            try {
+              const aiRes = await gradeWrittenWithAi({ promptText, promptLang, answerText, answerLang, userAnswer: val });
+              finalizeLearn(aiRes.correct, val, aiRes.correct, aiRes.feedback);
+            } catch (err) {
+              ln.checkingAi = false;
+              ln.aiError = { message: err.message === "MISSING_KEY" ? "Add your Gemini API key in Settings." : err.message, pendingValue: val };
+              render();
+            }
+          } else {
+            finalizeLearn(false, val);
+          }
+        };
+
+        if (ln.questionType === "mc" && !ln.feedback) {
+          stage.querySelectorAll("[data-mc-opt]").forEach(btn => btn.onclick = () => {
+            ln.selectedOption = Number(btn.dataset.mcOpt);
+            const chosen = ln.mcOptions[ln.selectedOption];
+            finalizeLearn(isLocallyAcceptable(chosen, answerText), chosen);
+          });
+        }
+
+        if (ln.questionType === "written" && !ln.feedback && !ln.checkingAi) {
+          const inp = stage.querySelector("#learnWrittenInput");
+          if (!ln.aiError) inp.focus();
+          inp.oninput = (e) => { ln.writtenInput = e.target.value; };
+          stage.querySelector("#learnWrittenForm").onsubmit = async (e) => {
+            e.preventDefault();
+            const val = inp.value.trim();
+            if (!val) return;
+            ln.writtenInput = val;
+            await submitWrittenForAi(val);
+          };
+
+          if (ln.aiError) {
+            stage.querySelector("#btnLearnRecallAi")?.addEventListener("click", () => {
+              const val = inp.value.trim() || ln.aiError.pendingValue;
+              if (val) submitWrittenForAi(val);
+            });
+            stage.querySelector("#btnLearnFallbackLocal")?.addEventListener("click", () => {
+              const val = inp.value.trim() || ln.aiError.pendingValue;
+              finalizeLearn(isLocallyAcceptable(val, answerText), val);
+            });
+          }
+        }
+
+        if (ln.feedback) {
+          const advanceQueue = () => {
+            const cur = ln.queueIds.shift();
+            if ((card.mastery || 0) < 2) ln.queueIds.push(cur);
+            prepareNextLearnQuestion(set); render();
+          };
+          const nextBtn = stage.querySelector("#btnLearnNext");
+          nextBtn.onclick = advanceQueue;
+          nextBtn.focus();
+          stage.querySelector("#btnLearnOverride")?.addEventListener("click", () => {
+            if (!ln.feedback.correct) {
+              ln.roundCorrect++;
+              card.mastery = Math.min(2, (card.mastery || 0) + 2);
+              saveSets(); advanceQueue(); showToast("Marked as correct!");
+            }
+          });
+        }
+      }
+
+      /* ---------------- 7C. TEST MODE ---------------- */
+      function initTestSetup(set) {
+        const active = getActiveStudyCards(set);
+        state.study.test = {
+          phase: "setup", gradingAi: false,
+          config: { count: Math.min(10, Math.max(1, active.length)), direction: "term", types: { mc: true, written: true, tf: true } },
+          questions: [], userAnswers: {}, results: null
+        };
+      }
+
+      function generateTestQuestions(set, cardsPool, config) {
+        const chosen = shuffleArray(cardsPool).slice(0, Math.min(config.count, cardsPool.length));
+        const enabledTypes = Object.entries(config.types).filter(([, on]) => on).map(([k]) => k);
+        if (!enabledTypes.length) enabledTypes.push("mc");
+
+        return chosen.map((card, i) => {
+          const type = enabledTypes[i % enabledTypes.length];
+          const askDef = config.direction === "both" ? i % 2 === 0 : config.direction === "def";
+          const prompt = askDef ? card.term : card.def, answer = askDef ? card.def : card.term;
+          const promptLang = askDef ? set.termLang : set.defLang, answerLang = askDef ? set.defLang : set.termLang;
+
+          if (type === "tf") {
+            const others = set.cards.filter(c => c.id !== card.id);
+            const showTrue = !others.length || Math.random() < 0.5;
+            const other = others[Math.floor(Math.random() * others.length)];
+            const shownMatch = showTrue ? answer : (askDef ? other.def : other.term);
+            return { id: uid(), cardId: card.id, type, prompt, shownMatch, correctAnswer: normalizeAnswer(shownMatch) === normalizeAnswer(answer) ? "True" : "False", promptLang, answerLang };
+          }
+          if (type === "mc") {
+            return { id: uid(), cardId: card.id, type, prompt, options: buildMcOptions(set.cards, card.id, askDef, answer), correctAnswer: answer, promptLang, answerLang };
+          }
+          return { id: uid(), cardId: card.id, type: "written", prompt, correctAnswer: answer, promptLang, answerLang };
+        });
+      }
+
+      function renderTestMode(stage, set) {
+        const t = state.study.test, active = getActiveStudyCards(set);
+        if (!active.length) { stage.innerHTML = `<div class="empty-state"><p>No cards available in this filter.</p></div>`; return; }
+
+        if (t.phase === "setup") {
+          const maxQ = active.length;
+          t.config.count = Math.min(t.config.count, maxQ);
+          stage.innerHTML = `
+            <div class="study-card-box">
+              <h2 style="margin:0 0 6px; font-size:1.35rem;">Configure Practice Test</h2>
+              <p style="margin:0 0 18px; color:var(--text-muted);">Customize your quiz before starting. Answers are graded when you submit.</p>
+              <div class="form-grid" style="margin-bottom:18px;">
+                <div class="form-group">
+                  <label class="form-label" for="testCountInput">Questions (Max ${maxQ})</label>
+                  <input id="testCountInput" class="input" type="number" min="1" max="${maxQ}" value="${t.config.count}" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="testDirection">Question &amp; Answer Direction</label>
+                  <select id="testDirection" class="select">
+                    <option value="term" ${t.config.direction === "term" ? "selected" : ""}>Show Definition → Answer with Term (${escapeHtml(getLangInfo(set.termLang).short)})</option>
+                    <option value="def" ${t.config.direction === "def" ? "selected" : ""}>Show Term → Answer with Definition (${escapeHtml(getLangInfo(set.defLang).short)})</option>
+                    <option value="both" ${t.config.direction === "both" ? "selected" : ""}>Both (Mixed)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:20px;">
+                <span class="form-label">Question Types</span>
+                <div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:4px;">
+                  ${[["chkTestMc", "mc", "Multiple Choice"], ["chkTestWritten", "written", "Written"], ["chkTestTf", "tf", "True / False"]].map(([id, key, label]) => `
+                    <label class="switch-label"><input type="checkbox" class="switch-input" id="${id}" ${t.config.types[key] ? "checked" : ""} /><span class="switch"></span><span>${label}</span></label>
+                  `).join("")}
+                </div>
+              </div>
+              <button type="button" class="btn btn-primary" id="btnStartTest" style="width:100%;">Start Practice Test</button>
+            </div>
+          `;
+          stage.querySelector("#testCountInput").oninput = (e) => { t.config.count = Math.max(1, Math.min(maxQ, Number(e.target.value) || 1)); };
+          stage.querySelector("#testDirection").onchange = (e) => { t.config.direction = e.target.value; };
+          stage.querySelector("#chkTestMc").onchange = (e) => { t.config.types.mc = e.target.checked; };
+          stage.querySelector("#chkTestWritten").onchange = (e) => { t.config.types.written = e.target.checked; };
+          stage.querySelector("#chkTestTf").onchange = (e) => { t.config.types.tf = e.target.checked; };
+          stage.querySelector("#btnStartTest").onclick = () => {
+            if (!t.config.types.mc && !t.config.types.written && !t.config.types.tf) return showToast("Select at least one question type.", "error");
+            t.questions = generateTestQuestions(set, active, t.config);
+            t.userAnswers = {}; t.phase = "exam"; render();
+          };
+          return;
+        }
+
+        if (t.phase === "exam") {
+          stage.innerHTML = `
+            <form id="testExamForm" style="max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:16px;">
+              ${t.questions.map((q, idx) => `
+                <div class="study-card-box" style="margin:0;">
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <span class="badge badge-primary">Question ${idx + 1} of ${t.questions.length} • ${q.type === "mc" ? "Multiple Choice" : q.type === "tf" ? "True / False" : "Written"}</span>
+                    <button type="button" class="btn-ghost btn-sm speak-btn" data-test-speak="${idx}" aria-label="Listen">${svgIcon("speaker", 18)}</button>
+                  </div>
+                  ${q.type === "tf" ? `
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:10px; background:var(--surface-secondary); border-radius:var(--radius-md); margin-bottom:14px;">
+                      <div><div class="field-caption">PROMPT</div><div style="font-weight:700; font-size:1.1rem;" lang="${escapeHtml(q.promptLang)}">${escapeHtml(q.prompt)}</div></div>
+                      <div><div class="field-caption">MATCHING ANSWER</div><div style="font-weight:700; font-size:1.1rem;" lang="${escapeHtml(q.answerLang)}">${escapeHtml(q.shownMatch)}</div></div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                      ${["True", "False"].map(v => `<button type="button" class="mc-option ${t.userAnswers[q.id] === v ? "selected" : ""}" data-tf-ans="${q.id}" data-val="${v}" ${t.gradingAi ? "disabled" : ""}>${v}</button>`).join("")}
+                    </div>
+                  ` : q.type === "mc" ? `
+                    <div style="font-size:1.25rem; font-weight:700; margin-bottom:14px;" lang="${escapeHtml(q.promptLang)}">${escapeHtml(q.prompt)}</div>
+                    <div class="mc-options-grid">
+                      ${q.options.map((opt, oIdx) => `
+                        <button type="button" class="mc-option ${t.userAnswers[q.id] === opt ? "selected" : ""}" data-mc-ans="${q.id}" data-opt-idx="${oIdx}" lang="${escapeHtml(q.answerLang)}" ${t.gradingAi ? "disabled" : ""}>
+                          <span class="mc-num">${oIdx + 1}</span><span>${escapeHtml(opt)}</span>
+                        </button>`).join("")}
+                    </div>
+                  ` : `
+                    <div style="font-size:1.25rem; font-weight:700; margin-bottom:14px;" lang="${escapeHtml(q.promptLang)}">${escapeHtml(q.prompt)}</div>
+                    <input type="text" class="input" data-written-ans="${q.id}" lang="${escapeHtml(q.answerLang)}" value="${escapeHtml(t.userAnswers[q.id] || "")}" placeholder="Type your answer..." autocomplete="off" ${t.gradingAi ? "disabled" : ""} />
+                  `}
+                </div>
+              `).join("")}
+              <div style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:6px;">
+                <button type="button" class="btn btn-secondary" id="btnCancelTest" ${t.gradingAi ? "disabled" : ""}>Back to Setup</button>
+                <button type="submit" class="btn btn-primary" style="min-width:210px;" ${t.gradingAi ? "disabled" : ""}>${t.gradingAi ? `<span class="spinner"></span> ✨ Grading with AI...` : `Submit Test`}</button>
+              </div>
+            </form>
+          `;
+
+          stage.querySelectorAll("[data-test-speak]").forEach(b => b.onclick = () => {
+            const q = t.questions[Number(b.dataset.testSpeak)];
+            speakText(q.prompt, q.promptLang, b);
+          });
+          stage.querySelectorAll("[data-tf-ans]").forEach(b => b.onclick = () => {
+            const qid = b.dataset.tfAns;
+            t.userAnswers[qid] = b.dataset.val;
+            stage.querySelectorAll(`[data-tf-ans="${qid}"]`).forEach(x => x.classList.remove("selected"));
+            b.classList.add("selected");
+          });
+          stage.querySelectorAll("[data-mc-ans]").forEach(b => b.onclick = () => {
+            const qid = b.dataset.mcAns;
+            t.userAnswers[qid] = t.questions.find(item => item.id === qid).options[Number(b.dataset.optIdx)];
+            stage.querySelectorAll(`[data-mc-ans="${qid}"]`).forEach(x => x.classList.remove("selected"));
+            b.classList.add("selected");
+          });
+          stage.querySelectorAll("[data-written-ans]").forEach(inp => inp.oninput = () => { t.userAnswers[inp.dataset.writtenAns] = inp.value; });
+          stage.querySelector("#btnCancelTest").onclick = () => { t.phase = "setup"; render(); };
+
+          stage.querySelector("#testExamForm").onsubmit = async (e) => {
+            e.preventDefault();
+            const graded = t.questions.map(q => {
+              const ua = (t.userAnswers[q.id] || "").trim();
+              const isCorrect = q.type === "tf" ? ua === q.correctAnswer : isLocallyAcceptable(ua, q.correctAnswer);
+              return { ...q, userAnswer: ua, isCorrect, aiVerified: false, aiNote: "" };
+            });
+
+            let aiGradingError = "";
+            const needAi = graded.filter(it => it.type === "written" && !it.isCorrect && it.userAnswer.length > 0);
+            if (needAi.length && state.prefs.aiGrading && (state.prefs.apiKey || "").trim()) {
+              t.gradingAi = true; render();
+              try {
+                const aiMap = await batchGradeWrittenTestWithAi(needAi);
+                for (const it of graded) {
+                  if (aiMap[it.id]) {
+                    it.isCorrect = aiMap[it.id].correct;
+                    it.aiVerified = aiMap[it.id].correct;
+                    it.aiNote = aiMap[it.id].feedback;
+                  }
+                }
+              } catch (err) {
+                aiGradingError = err.message === "MISSING_KEY" ? "Missing Gemini API key." : (err.message || "AI grading failed.");
+                showToast("AI grading failed. Use Recall AI on the results page.", "error");
+              }
+              finally { t.gradingAi = false; }
+            }
+
+            const correctCount = graded.filter(i => i.isCorrect).length;
+            t.results = { correctCount, total: graded.length, pct: Math.round((correctCount / graded.length) * 100), items: graded, aiGradingError };
+            t.phase = "results";
+            render();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          };
+          return;
+        }
+
+        const res = t.results, missedIds = Array.from(new Set(res.items.filter(i => !i.isCorrect).map(i => i.cardId)));
+        const scoreColor = res.pct >= 70 ? "var(--green)" : "var(--orange)", scoreBg = res.pct >= 70 ? "var(--green-soft)" : "var(--orange-soft)";
+
+        stage.innerHTML = `
+          <div class="study-card-box" style="text-align:center; margin-bottom:18px;">
+            <div class="score-circle" style="border-color:${scoreColor}; color:${scoreColor}; background:${scoreBg};">${res.pct}%</div>
+            <h2 style="margin:0 0 6px;">Test Results</h2>
+            <p style="margin:0 0 16px; color:var(--text-muted);">${res.correctCount} correct out of ${res.total} questions</p>
+            <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-bottom:20px;">
+              <span class="badge badge-green" style="font-size:.92rem; padding:7px 14px;">✓ Correct: ${res.correctCount}</span>
+              <span class="badge" style="font-size:.92rem; padding:7px 14px; background:var(--orange-soft); color:var(--orange); border-color:transparent;">✕ Missed: ${res.total - res.correctCount}</span>
+            </div>
+            <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+              ${missedIds.length ? `<button type="button" class="btn btn-primary" id="btnRetakeMissed">Retake Missed Questions (${missedIds.length})</button>` : ""}
+              <button type="button" class="btn btn-secondary" id="btnNewTest">New Test</button>
+            </div>
+          </div>
+
+          ${res.aiGradingError ? `
+            <div class="feedback-banner incorrect" style="max-width:760px; margin:0 auto 18px;">
+              <div>
+                <div>⚠️ AI grading failed: ${escapeHtml(res.aiGradingError)}</div>
+                <div class="feedback-sub">Written answers were checked locally only. Recall AI to grade synonyms &amp; phrasing.</div>
+              </div>
+              <button type="button" class="btn btn-primary btn-sm" id="btnTestRecallAi" ${t.gradingAi ? "disabled" : ""}>
+                ${t.gradingAi ? `<span class="spinner"></span> ↻ Recalling AI...` : `↻ Recall AI Grading`}
+              </button>
+            </div>
+          ` : ""}
+
+          <div style="max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:12px;">
+            ${res.items.map((item, idx) => `
+              <div class="study-card-box" style="margin:0; border-left:5px solid ${item.isCorrect ? "var(--green)" : "var(--orange)"};">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <span style="font-weight:800; font-size:.86rem; color:${item.isCorrect ? "var(--green)" : "var(--orange)"};">
+                    ${item.isCorrect ? (item.aiVerified ? "✓ Correct (✨ AI verified)" : "✓ Correct") : "✕ Incorrect"} — Q${idx + 1}
+                  </span>
+                  <button type="button" class="btn-ghost btn-sm speak-btn" data-res-speak="${idx}" aria-label="Speak prompt">${svgIcon("speaker", 17)}</button>
+                </div>
+                <div style="font-weight:700; font-size:1.1rem; margin-bottom:8px;" lang="${escapeHtml(item.promptLang)}">
+                  ${escapeHtml(item.prompt)} ${item.type === "tf" ? `= "${escapeHtml(item.shownMatch)}"` : ""}
+                </div>
+                <div style="display:flex; flex-direction:column; gap:4px; font-size:.94rem;">
+                  <div><span style="color:var(--text-muted);">Your answer:</span> <strong style="color:${item.isCorrect ? "var(--green)" : "var(--orange)"};">${escapeHtml(item.userAnswer || "(No answer)")}</strong></div>
+                  ${(!item.isCorrect || item.aiVerified) ? `<div><span style="color:var(--text-muted);">Reference answer:</span> <strong style="color:var(--green);" lang="${escapeHtml(item.answerLang)}">${escapeHtml(item.correctAnswer)}</strong></div>` : ""}
+                  ${item.aiNote ? `<div style="font-size:.84rem; color:var(--text-muted);">✨ ${escapeHtml(item.aiNote)}</div>` : ""}
+                </div>
+              </div>
+            `).join("")}
+          </div>
+        `;
+
+        stage.querySelector("#btnTestRecallAi")?.addEventListener("click", async () => {
+          const needAi = res.items.filter(it => it.type === "written" && !it.isCorrect && it.userAnswer.length > 0);
+          if (!needAi.length) { res.aiGradingError = ""; return render(); }
+          t.gradingAi = true; render();
+          try {
+            const aiMap = await batchGradeWrittenTestWithAi(needAi);
+            for (const it of res.items) {
+              if (aiMap[it.id]) {
+                it.isCorrect = aiMap[it.id].correct;
+                it.aiVerified = aiMap[it.id].correct;
+                it.aiNote = aiMap[it.id].feedback;
+              }
+            }
+            res.correctCount = res.items.filter(i => i.isCorrect).length;
+            res.pct = Math.round((res.correctCount / res.items.length) * 100);
+            res.aiGradingError = "";
+            showToast("AI grading complete!", "success");
+          } catch (err) {
+            res.aiGradingError = err.message === "MISSING_KEY" ? "Missing Gemini API key." : (err.message || "AI grading failed.");
+            showToast("AI grading failed again. Try again in a moment.", "error");
+          } finally {
+            t.gradingAi = false;
+            render();
+          }
+        });
+
+        stage.querySelectorAll("[data-res-speak]").forEach(b => b.onclick = () => {
+          const it = res.items[Number(b.dataset.resSpeak)];
+          speakText(it.prompt, it.promptLang, b);
+        });
+        stage.querySelector("#btnNewTest").onclick = () => { t.phase = "setup"; render(); };
+        stage.querySelector("#btnRetakeMissed")?.addEventListener("click", () => {
+          const missedCards = set.cards.filter(c => missedIds.includes(c.id));
+          t.questions = generateTestQuestions(set, missedCards, { ...t.config, count: missedCards.length });
+          t.userAnswers = {}; t.phase = "exam"; render();
+        });
+      }
+
+      /* =====================================================================
+         8. AI CAMERA & PHOTO-TO-FLASHCARD SCANNER
+      ===================================================================== */
+      function stopCameraStream() {
+        state.scanner.stream?.getTracks().forEach(tr => { try { tr.stop(); } catch {} });
+        state.scanner.stream = null;
+        const v = $("scannerVideoEl");
+        if (v) v.srcObject = null;
+      }
+
+      function openScannerModal(targetSetId = null) {
+        let termLang = "en-US", defLang = "zh-TW";
+        if (targetSetId === "EDITOR") ({ termLang, defLang } = state.editor);
+        else if (targetSetId) { const s = getSetById(targetSetId); if (s) ({ termLang, defLang } = s); }
+
+        Object.assign(state.scanner, {
+          open: true, step: "capture", facingMode: "environment", stream: null, cameraError: "",
+          imageDataUrl: "", mode: "auto", termLang, defLang, extracting: false, extractError: "", extractedCards: [], targetSetId
+        });
+        $("scannerModal").classList.remove("hidden");
+        renderScannerModal();
+        startCameraViewfinder();
+      }
+
+      function closeScannerModal() {
+        stopCameraStream();
+        state.scanner.open = false;
+        $("scannerModal").classList.add("hidden");
+      }
+
+      async function startCameraViewfinder() {
+        stopCameraStream();
+        const sc = state.scanner;
+        sc.cameraError = "";
+        if (!navigator.mediaDevices?.getUserMedia) {
+          sc.cameraError = "Live camera is unavailable in this browser context (HTTPS is required on mobile). Use Upload from Gallery below.";
+          return renderScannerModal();
+        }
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: sc.facingMode }, width: { ideal: 1920 }, height: { ideal: 1080 } },
+            audio: false
+          });
+          if (!sc.open || sc.step !== "capture") return stream.getTracks().forEach(t => t.stop());
+          sc.stream = stream;
+          const v = $("scannerVideoEl");
+          if (v) { v.srcObject = stream; await v.play().catch(() => {}); }
+          $("scannerCameraFallback")?.classList.add("hidden");
+        } catch (err) {
+          sc.cameraError = err.name === "NotAllowedError"
+            ? "Camera permission denied. You can allow camera access or upload a photo from your gallery."
+            : "Could not start camera (" + (err.message || "unavailable") + "). Please upload a photo from your gallery.";
+          renderScannerModal();
+        }
+      }
+
+      function compressCanvasToJpeg(src, maxSide = 1600, quality = 0.85) {
+        const w = src.videoWidth || src.naturalWidth || src.width;
+        const h = src.videoHeight || src.naturalHeight || src.height;
+        const scale = Math.min(1, maxSide / Math.max(w, h));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(w * scale));
+        canvas.height = Math.max(1, Math.round(h * scale));
+        canvas.getContext("2d").drawImage(src, 0, 0, canvas.width, canvas.height);
+        return canvas.toDataURL("image/jpeg", quality);
+      }
+
+      function handleUploadedImageFile(file) {
+        if (!file || !file.type.startsWith("image/")) return showToast("Please select a valid image file.", "error");
+        stopCameraStream();
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            state.scanner.imageDataUrl = compressCanvasToJpeg(img);
+            state.scanner.step = "preview";
+            state.scanner.extractError = "";
+            renderScannerModal();
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      async function runAiPhotoExtraction() {
+        const sc = state.scanner;
+        if (!sc.imageDataUrl) return;
+        sc.extracting = true; sc.extractError = ""; renderScannerModal();
+
+        const modeInstr = sc.mode === "auto"
+          ? "Mode: Auto / Smart Detect. Inspect the image (printed vocab list, flashcards, handwritten notes, or dense text). Extract clear vocabulary pairs or key concepts into flashcards."
+          : sc.mode === "qa"
+          ? "Mode: Textbook Paragraph -> Q&A Cards. Summarize key concepts, formulas, definitions, or important facts from the text into crisp Term (question or concept) and Definition (concise answer or explanation) flashcards."
+          : "Mode: Real-World Object / Scene -> Vocabulary. Identify prominent objects, actions, or items visible in the photo and create helpful vocabulary flashcards.";
+
+        const prompt = `${modeInstr}
+Target Term Language: ${getLangInfo(sc.termLang).label}
+Target Definition Language: ${getLangInfo(sc.defLang).label}
+
+Return strictly valid JSON with this exact schema:
+{
+  "suggestedTitle": "Short descriptive title for this study set",
+  "cards": [
+    { "term": "...", "def": "..." }
+  ]
+}
+Keep terms and definitions accurate, clean, and concise for flashcard study. Extract up to 25 of the best cards.`;
+
+        try {
+          const res = await callGemini({
+            parts: [{ text: prompt }, { inlineData: { mimeType: "image/jpeg", data: sc.imageDataUrl.split(",")[1] } }],
+            expectJson: true
+          });
+          if (!sc.open || sc.step !== "preview") return;
+          const cards = (Array.isArray(res.cards) ? res.cards : [])
+            .map(c => ({ id: uid(), checked: true, term: String(c.term || "").trim(), def: String(c.def || "").trim() }))
+            .filter(c => c.term || c.def);
+          if (!cards.length) throw new Error("No flashcards could be extracted from this image. Try a clearer photo or different mode.");
+          sc.extractedCards = cards;
+          sc.suggestedTitle = String(res.suggestedTitle || "Scanned Study Set").trim();
+          sc.step = "results";
+        } catch (err) {
+          if (!sc.open) return;
+          sc.extractError = err.message === "MISSING_KEY" ? "Please enter your Gemini API key in Settings (⚙️) first." : err.message;
+        } finally {
+          sc.extracting = false;
+          if (sc.open) renderScannerModal();
+        }
+      }
+
+      function renderScannerModal() {
+        const body = $("scannerModalBody"), sc = state.scanner;
+        if (!sc.open) return;
+
+        if (sc.step === "capture") {
+          body.innerHTML = `
+            <div class="camera-box">
+              <video id="scannerVideoEl" class="camera-video" autoplay playsinline muted></video>
+              <div class="camera-overlay-top">
+                <span class="camera-pill-btn" style="display:inline-flex; align-items:center;">📷 Live Viewfinder</span>
+                <button type="button" class="camera-pill-btn" id="btnSwitchCam" title="Switch front/rear camera">🔄 Flip Camera</button>
+              </div>
+              <div class="camera-overlay-bottom"><button type="button" class="shutter-btn" id="btnCaptureShutter" aria-label="Capture photo"></button></div>
+              <div id="scannerCameraFallback" class="camera-fallback ${sc.cameraError ? "" : "hidden"}">
+                <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                <p style="margin:0; max-width:380px; font-size:.94rem;">${escapeHtml(sc.cameraError)}</p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                  <button type="button" class="btn btn-primary btn-sm" id="btnRetryCamera">Retry Camera</button>
+                  <button type="button" class="btn btn-secondary btn-sm" id="btnFallbackUpload">📁 Upload from Gallery</button>
+                </div>
+              </div>
+            </div>
+            <div class="dropzone" id="scannerDropzone">
+              <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                <button type="button" class="btn btn-secondary" id="btnGalleryUpload">📁 Upload from Gallery</button>
+                <span>or drag &amp; drop / press <strong>Ctrl+V</strong> to paste a screenshot</span>
+              </div>
+              <input type="file" id="scannerFileInput" accept="image/*" class="hidden" />
+            </div>
+          `;
+
+          if (sc.stream) {
+            const v = body.querySelector("#scannerVideoEl");
+            v.srcObject = sc.stream; v.play().catch(() => {});
+          }
+          body.querySelector("#btnSwitchCam").onclick = () => { sc.facingMode = sc.facingMode === "environment" ? "user" : "environment"; startCameraViewfinder(); };
+          body.querySelector("#btnCaptureShutter").onclick = () => {
+            const v = body.querySelector("#scannerVideoEl");
+            if (!v?.videoWidth) return showToast("Camera is not ready yet.", "error");
+            sc.imageDataUrl = compressCanvasToJpeg(v);
+            stopCameraStream(); sc.step = "preview"; renderScannerModal();
+          };
+          body.querySelector("#btnRetryCamera")?.addEventListener("click", startCameraViewfinder);
+          const triggerUpload = () => { stopCameraStream(); body.querySelector("#scannerFileInput").click(); };
+          body.querySelector("#btnGalleryUpload").onclick = triggerUpload;
+          body.querySelector("#btnFallbackUpload")?.addEventListener("click", triggerUpload);
+          body.querySelector("#scannerFileInput").onchange = (e) => e.target.files?.[0] && handleUploadedImageFile(e.target.files[0]);
+
+          const dz = body.querySelector("#scannerDropzone");
+          dz.ondragover = (e) => { e.preventDefault(); dz.classList.add("dragover"); };
+          dz.ondragleave = () => dz.classList.remove("dragover");
+          dz.ondrop = (e) => { e.preventDefault(); dz.classList.remove("dragover"); e.dataTransfer.files?.[0] && handleUploadedImageFile(e.dataTransfer.files[0]); };
+          return;
+        }
+
+        if (sc.step === "preview") {
+          body.innerHTML = `
+            <img src="${sc.imageDataUrl}" alt="Captured study material" class="captured-preview-img" />
+            <div class="form-group">
+              <span class="form-label">AI Extraction Mode</span>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                ${[["auto", "Auto / Smart Detect"], ["qa", "Textbook Paragraph → Q&amp;A"], ["scene", "Object / Scene → Vocab"]].map(([m, lbl]) =>
+                  `<button type="button" class="pill ${sc.mode === m ? "active" : ""}" data-scan-mode="${m}">${lbl}</button>`
+                ).join("")}
+              </div>
+            </div>
+            <div class="form-grid">
+              <div class="form-group"><label class="form-label" for="scanTermLang">Term Language</label><select id="scanTermLang" class="select">${langOpts(sc.termLang)}</select></div>
+              <div class="form-group"><label class="form-label" for="scanDefLang">Definition Language</label><select id="scanDefLang" class="select">${langOpts(sc.defLang)}</select></div>
+            </div>
+            ${sc.extractError ? `
+              <div class="feedback-banner incorrect" style="margin-top:0;">
+                <span style="flex:1 1 220px;">${escapeHtml(sc.extractError)}</span>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button type="button" class="btn btn-primary btn-sm" id="btnRetryExtractFromBanner" ${sc.extracting ? "disabled" : ""}>↻ Recall AI</button>
+                  ${sc.extractError.includes("Settings") ? `<button type="button" class="btn btn-secondary btn-sm" id="btnOpenSettingsFromScan">Open Settings</button>` : ""}
+                </div>
+              </div>` : ""}
+            <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary" id="btnScanRetake" ${sc.extracting ? "disabled" : ""}>↺ Retake / New Photo</button>
+              <button type="button" class="btn btn-primary" id="btnRunExtract" ${sc.extracting ? "disabled" : ""}>${sc.extracting ? `<span class="spinner"></span> Extracting Cards...` : sc.extractError ? `↻ Recall AI Extract` : `✨ Extract Cards`}</button>
+            </div>
+          `;
+          body.querySelectorAll("[data-scan-mode]").forEach(b => b.onclick = () => { sc.mode = b.dataset.scanMode; renderScannerModal(); });
+          body.querySelector("#scanTermLang").onchange = (e) => { sc.termLang = e.target.value; };
+          body.querySelector("#scanDefLang").onchange = (e) => { sc.defLang = e.target.value; };
+          body.querySelector("#btnScanRetake").onclick = () => { sc.step = "capture"; sc.imageDataUrl = ""; sc.extractError = ""; renderScannerModal(); startCameraViewfinder(); };
+          body.querySelector("#btnRunExtract").onclick = runAiPhotoExtraction;
+          body.querySelector("#btnRetryExtractFromBanner")?.addEventListener("click", runAiPhotoExtraction);
+          body.querySelector("#btnOpenSettingsFromScan")?.addEventListener("click", () => { closeScannerModal(); openSettingsModal(); });
+          return;
+        }
+
+        const selectedCount = sc.extractedCards.filter(c => c.checked).length;
+        body.innerHTML = `
+          <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:var(--surface-secondary); padding:12px; border-radius:var(--radius-md); border:1px solid var(--border);">
+            <img src="${sc.imageDataUrl}" alt="Thumbnail" style="width:76px; height:58px; object-fit:cover; border-radius:8px; border:1px solid var(--border);" />
+            <div style="flex:1; min-width:180px;">
+              <label class="form-label" for="scanSetTitle">Set Title (for New Set)</label>
+              <input id="scanSetTitle" class="input" type="text" value="${escapeHtml(sc.suggestedTitle || "Scanned Study Set")}" style="min-height:38px; margin-top:4px;" />
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+            <span style="font-weight:700; font-size:.94rem;">Review Extracted Cards (${selectedCount}/${sc.extractedCards.length} selected)</span>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnScanSwapAll">Swap All Term ↔ Def</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="btnScanToggleAll">${selectedCount === sc.extractedCards.length ? "Deselect All" : "Select All"}</button>
+            </div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px; max-height:42vh; overflow-y:auto; padding-right:4px;">
+            ${sc.extractedCards.map((c, idx) => `
+              <div style="display:grid; grid-template-columns:auto 1fr 1fr; gap:10px; align-items:center; padding:10px; border:1.5px solid var(--border); border-radius:var(--radius-md); background:var(--surface);">
+                <input type="checkbox" data-scan-chk="${idx}" ${c.checked ? "checked" : ""} style="width:20px; height:20px; accent-color:var(--primary);" aria-label="Include card ${idx + 1}" />
+                <input type="text" class="input" data-scan-term="${idx}" value="${escapeHtml(c.term)}" placeholder="Term" style="min-height:40px;" />
+                <input type="text" class="input" data-scan-def="${idx}" value="${escapeHtml(c.def)}" placeholder="Definition" style="min-height:40px;" />
+              </div>`).join("")}
+          </div>
+          <div style="display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; padding-top:8px; border-top:1px solid var(--border);">
+            <button type="button" class="btn btn-secondary" id="btnScanBackPreview">← Back</button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              ${(sc.targetSetId || state.sets.length > 0) ? `<button type="button" class="btn btn-outline-primary" id="btnScanAddCurrent" ${selectedCount === 0 ? "disabled" : ""}>Add to ${sc.targetSetId === "EDITOR" ? "Current Editor" : sc.targetSetId ? "Current Set" : "Selected Set"}</button>` : ""}
+              <button type="button" class="btn btn-primary" id="btnScanCreateNew" ${selectedCount === 0 ? "disabled" : ""}>Create New Set (${selectedCount})</button>
+            </div>
+          </div>
+        `;
+
+        body.querySelector("#scanSetTitle").oninput = (e) => { sc.suggestedTitle = e.target.value; };
+        body.querySelectorAll("[data-scan-chk]").forEach(chk => chk.onchange = () => { sc.extractedCards[Number(chk.dataset.scanChk)].checked = chk.checked; renderScannerModal(); });
+        body.querySelectorAll("[data-scan-term]").forEach(inp => inp.oninput = () => { sc.extractedCards[Number(inp.dataset.scanTerm)].term = inp.value; });
+        body.querySelectorAll("[data-scan-def]").forEach(inp => inp.oninput = () => { sc.extractedCards[Number(inp.dataset.scanDef)].def = inp.value; });
+        body.querySelector("#btnScanSwapAll").onclick = () => {
+          sc.extractedCards.forEach(c => { [c.term, c.def] = [c.def, c.term]; });
+          [sc.termLang, sc.defLang] = [sc.defLang, sc.termLang];
+          renderScannerModal();
+        };
+        body.querySelector("#btnScanToggleAll").onclick = () => {
+          const allOn = selectedCount === sc.extractedCards.length;
+          sc.extractedCards.forEach(c => { c.checked = !allOn; });
+          renderScannerModal();
+        };
+        body.querySelector("#btnScanBackPreview").onclick = () => { sc.step = "preview"; renderScannerModal(); };
+
+        const getSelectedCards = () => sc.extractedCards
+          .filter(c => c.checked && (c.term.trim() || c.def.trim()))
+          .map(c => makeCard(c.term.trim(), c.def.trim()));
+
+        body.querySelector("#btnScanCreateNew").onclick = () => {
+          const cards = getSelectedCards();
+          if (!cards.length) return;
+          const newSet = {
+            id: uid(), title: (sc.suggestedTitle || "Scanned Study Set").trim(),
+            description: "Created from AI Photo Scan", folder: "AI Scanned",
+            termLang: sc.termLang, defLang: sc.defLang, createdAt: Date.now(), updatedAt: Date.now(), cards
+          };
+          state.sets.unshift(newSet);
+          saveSets(); closeScannerModal();
+          showToast(`Created "${newSet.title}" with ${cards.length} cards!`, "success");
+          openSetView(newSet.id);
+        };
+
+        body.querySelector("#btnScanAddCurrent")?.addEventListener("click", () => {
+          const cards = getSelectedCards();
+          if (!cards.length) return;
+          if (sc.targetSetId === "EDITOR") {
+            while (state.editor.cards.length && !state.editor.cards.at(-1).term.trim() && !state.editor.cards.at(-1).def.trim()) state.editor.cards.pop();
+            state.editor.cards.push(...cards);
+            closeScannerModal(); render();
+            return showToast(`Added ${cards.length} cards to editor!`, "success");
+          }
+          const target = sc.targetSetId ? getSetById(sc.targetSetId) : state.sets[0];
+          if (target) {
+            target.cards.push(...cards); target.updatedAt = Date.now();
+            saveSets(); closeScannerModal();
+            showToast(`Added ${cards.length} cards to "${target.title}"!`, "success");
+            openSetView(target.id);
+          }
+        });
+      }
+
+      /* =====================================================================
+         9. SETTINGS & BACKUP MODALS
+      ===================================================================== */
+      function openSettingsModal() {
+        const modal = $("settingsModal"), body = $("settingsModalBody");
+        let showKey = false;
+        loadVoices();
+
+        const renderBody = () => {
+          const zhVoices = cachedVoices.filter(v => /^(zh|cmn)/.test(normalizeVoiceLang(v.lang))).sort((a, b) => scoreVoice(b, "zh-TW") - scoreVoice(a, "zh-TW"));
+          const enVoices = cachedVoices.filter(v => normalizeVoiceLang(v.lang).startsWith("en")).sort((a, b) => scoreVoice(b, "en-US") - scoreVoice(a, "en-US"));
+          const overrides = state.prefs.voiceOverrides || {}, autoZh = pickBestVoice("zh-TW"), autoEn = pickBestVoice("en-US");
+
+          body.innerHTML = `
+            <div class="form-group">
+              <label class="form-label" for="setApiKeyInput">Google Gemini API Key</label>
+              <div style="display:flex; gap:8px;">
+                <input id="setApiKeyInput" class="input" type="${showKey ? "text" : "password"}" value="${escapeHtml(state.prefs.apiKey)}" placeholder="AIza..." autocomplete="off" />
+                <button type="button" class="btn btn-secondary" id="btnToggleKeyVis">${showKey ? "Hide" : "Show"}</button>
+              </div>
+              <small style="color:var(--text-muted); line-height:1.4;">Stored strictly in your browser's <code>localStorage</code>. Your key never leaves your device except when calling Google's Gemini API directly.</small>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="setModelSelect">Gemini Model</label>
+              <select id="setModelSelect" class="select">${GEMINI_MODELS.map(m => `<option value="${escapeHtml(m.id)}" ${state.prefs.model === m.id ? "selected" : ""}>${escapeHtml(m.label)}</option>`).join("")}</select>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline-primary btn-sm" id="btnTestGemini">Test API Connection</button>
+              <span id="testApiStatus" style="font-size:.88rem; font-weight:600;"></span>
+            </div>
+            <label class="switch-label">
+              <input type="checkbox" class="switch-input" id="chkSettingAiGrading" ${state.prefs.aiGrading ? "checked" : ""} />
+              <span class="switch"></span><span>✨ Use Gemini AI to judge written answers (Learn &amp; Test)</span>
+            </label>
+            <hr style="border:none; border-top:1px solid var(--border); width:100%; margin:4px 0;" />
+            <div class="form-group">
+              <label class="form-label" for="setSpeechRate">Text-to-Speech Speed</label>
+              <select id="setSpeechRate" class="select">
+                <option value="0.75" ${Number(state.prefs.speechRate) === 0.75 ? "selected" : ""}>0.75x (Slow &amp; Clear)</option>
+                <option value="1" ${Number(state.prefs.speechRate) === 1 ? "selected" : ""}>1.0x (Normal)</option>
+                <option value="1.25" ${Number(state.prefs.speechRate) === 1.25 ? "selected" : ""}>1.25x (Fast)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="setZhVoice">Chinese Voice (ZH-TW / Mandarin)</label>
+              <div style="display:flex; gap:8px;">
+                <select id="setZhVoice" class="select" style="flex:1;">
+                  <option value="">Auto Best (${escapeHtml(autoZh ? `${autoZh.name} [${autoZh.lang}]` : "System Default")})</option>
+                  ${zhVoices.map(v => `<option value="${escapeHtml(v.name)}" ${overrides["zh-TW"] === v.name ? "selected" : ""}>${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`).join("")}
+                </select>
+                <button type="button" class="btn btn-secondary btn-sm speak-btn" id="btnTestZhVoice">🔊 Test</button>
+              </div>
+              <small style="color:var(--text-muted);">Tip: Voices labeled "Google", "Natural", or "Online" sound much more natural than offline robotic voices.</small>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="setEnVoice">English Voice (EN-US)</label>
+              <div style="display:flex; gap:8px;">
+                <select id="setEnVoice" class="select" style="flex:1;">
+                  <option value="">Auto Best (${escapeHtml(autoEn ? `${autoEn.name} [${autoEn.lang}]` : "System Default")})</option>
+                  ${enVoices.map(v => `<option value="${escapeHtml(v.name)}" ${overrides["en-US"] === v.name ? "selected" : ""}>${escapeHtml(v.name)} (${escapeHtml(v.lang)})</option>`).join("")}
+                </select>
+                <button type="button" class="btn btn-secondary btn-sm speak-btn" id="btnTestEnVoice">🔊 Test</button>
+              </div>
+            </div>
+            <hr style="border:none; border-top:1px solid var(--border); width:100%; margin:4px 0;" />
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+              <button type="button" class="btn btn-danger btn-sm" id="btnClearAllData">Clear All Local Data</button>
+              <button type="button" class="btn btn-primary" id="btnSaveSettings">Done</button>
+            </div>
+          `;
+
+          body.querySelector("#setApiKeyInput").oninput = (e) => { state.prefs.apiKey = e.target.value.trim(); savePrefs(); };
+          body.querySelector("#btnToggleKeyVis").onclick = () => { showKey = !showKey; renderBody(); };
+          body.querySelector("#setModelSelect").onchange = (e) => { state.prefs.model = e.target.value; savePrefs(); };
+          body.querySelector("#chkSettingAiGrading").onchange = (e) => { state.prefs.aiGrading = e.target.checked; savePrefs(); };
+          body.querySelector("#setSpeechRate").onchange = (e) => { state.prefs.speechRate = Number(e.target.value); savePrefs(); };
+
+          const bindVoice = (id, key) => {
+            body.querySelector(id).onchange = (e) => {
+              state.prefs.voiceOverrides = state.prefs.voiceOverrides || {};
+              if (e.target.value) state.prefs.voiceOverrides[key] = e.target.value;
+              else delete state.prefs.voiceOverrides[key];
+              savePrefs();
+            };
+          };
+          bindVoice("#setZhVoice", "zh-TW");
+          bindVoice("#setEnVoice", "en-US");
+
+          body.querySelector("#btnTestZhVoice").onclick = (e) => speakText("(n.) 水；有韌性的", "zh-TW", e.currentTarget);
+          body.querySelector("#btnTestEnVoice").onclick = (e) => speakText("water, resilient", "en-US", e.currentTarget);
+          body.querySelector("#btnTestGemini").onclick = async () => {
+            const st = body.querySelector("#testApiStatus");
+            st.style.color = "var(--text-muted)"; st.textContent = "Testing connection...";
+            try {
+              const reply = await callGemini({ parts: [{ text: "Reply with exactly the word OK." }], expectJson: false });
+              st.style.color = "var(--green)"; st.textContent = `✓ Connected (${state.prefs.model}): "${String(reply).trim().slice(0, 30)}"`;
+            } catch (err) {
+              st.style.color = "var(--orange)"; st.textContent = err.message === "MISSING_KEY" ? "Enter an API key first." : err.message;
+            }
+          };
+          body.querySelector("#btnClearAllData").onclick = async () => {
+            if (await showConfirm("Clear All Data", "Delete ALL study sets, progress, and settings from this browser?", "Delete Everything")) {
+              localStorage.removeItem(STORAGE_KEY_SETS); localStorage.removeItem(STORAGE_KEY_PREFS);
+              state.prefs = { ...DEFAULT_PREFS }; state.sets = [createSampleSet()];
+              saveSets(); applyTheme("light");
+              modal.classList.add("hidden"); state.view = "home"; render();
+              showToast("All local data cleared & sample set restored.");
+            }
+          };
+          body.querySelector("#btnSaveSettings").onclick = () => { savePrefs(); modal.classList.add("hidden"); render(); showToast("Settings saved!", "success"); };
+        };
+
+        renderBody();
+        modal.classList.remove("hidden");
+      }
+
+      function openTransferModal() {
+        const modal = $("transferModal"), body = $("transferModalBody");
+        body.innerHTML = `
+          <div class="panel" style="background:var(--surface-secondary);">
+            <h3 style="margin:0 0 6px; font-size:1rem;">Export Backup (.json)</h3>
+            <p style="margin:0 0 12px; font-size:.9rem; color:var(--text-muted);">Download all ${state.sets.length} study sets (including starred cards and mastery progress) to move between your Android phone and computer.</p>
+            <button type="button" class="btn btn-primary" id="btnExportJson">Download Backup (.json)</button>
+          </div>
+          <div class="panel" style="background:var(--surface-secondary);">
+            <h3 style="margin:0 0 6px; font-size:1rem;">Import Backup (.json)</h3>
+            <p style="margin:0 0 12px; font-size:.9rem; color:var(--text-muted);">Choose whether to merge imported sets with your current library or replace everything.</p>
+            <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:12px;">
+              <label style="display:inline-flex; align-items:center; gap:6px; font-weight:600; cursor:pointer;"><input type="radio" name="importMode" value="merge" checked /> Merge (Keep existing sets)</label>
+              <label style="display:inline-flex; align-items:center; gap:6px; font-weight:600; cursor:pointer;"><input type="radio" name="importMode" value="replace" /> Replace all sets</label>
+            </div>
+            <input type="file" id="importJsonInput" accept="application/json,.json" class="hidden" />
+            <button type="button" class="btn btn-outline-primary" id="btnTriggerImport">Select .json Backup File</button>
+          </div>
+        `;
+
+        body.querySelector("#btnExportJson").onclick = () => {
+          const blob = new Blob([JSON.stringify({ app: "LexiFlash", version: 1, exportedAt: new Date().toISOString(), sets: state.sets }, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = Object.assign(document.createElement("a"), { href: url, download: `lexiflash-backup-${new Date().toISOString().slice(0, 10)}.json` });
+          document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+          showToast("Backup downloaded!", "success");
+        };
+
+        body.querySelector("#btnTriggerImport").onclick = () => body.querySelector("#importJsonInput").click();
+        body.querySelector("#importJsonInput").onchange = (e) => {
+          const file = e.target.files?.[0];
+          if (!file) return;
+          const mode = body.querySelector('input[name="importMode"]:checked').value;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const parsed = JSON.parse(ev.target.result);
+              const importedSets = Array.isArray(parsed) ? parsed : parsed.sets;
+              if (!Array.isArray(importedSets)) throw new Error("Invalid backup format.");
+
+              const normalized = importedSets.filter(s => s && Array.isArray(s.cards)).map(s => ({
+                id: s.id || uid(), title: String(s.title || "Imported Set"), description: String(s.description || ""),
+                folder: String(s.folder || ""), termLang: s.termLang || "en-US", defLang: s.defLang || "zh-TW",
+                createdAt: s.createdAt || Date.now(), updatedAt: Date.now(),
+                cards: s.cards.map(c => ({ id: c.id || uid(), term: String(c.term || ""), def: String(c.def || ""), starred: Boolean(c.starred), mastery: Number(c.mastery) || 0 }))
+              }));
+
+              if (mode === "replace") state.sets = normalized;
+              else {
+                const existingIds = new Set(state.sets.map(s => s.id));
+                for (const item of normalized) {
+                  if (existingIds.has(item.id)) item.id = uid();
+                  state.sets.unshift(item);
+                }
+              }
+              saveSets(); modal.classList.add("hidden"); state.view = "home"; render();
+              showToast(`Imported ${normalized.length} study sets!`, "success");
+            } catch (err) { showToast("Failed to import JSON: " + err.message, "error"); }
+          };
+          reader.readAsText(file);
+        };
+        modal.classList.remove("hidden");
+      }
+
+      /* =====================================================================
+         10. GLOBAL EVENTS, SHORTCUTS & BOOTSTRAP
+      ===================================================================== */
+      function wireGlobalEvents() {
+        $("btnGoHome").onclick = () => { state.view = "home"; render(); };
+
+        const searchInput = $("globalSearchInput"), clearBtn = $("btnClearSearch");
+        searchInput.oninput = (e) => {
+          state.searchQuery = e.target.value;
+          clearBtn.classList.toggle("hidden", !state.searchQuery);
+          if (state.view !== "home") state.view = "home";
+          render();
+        };
+        clearBtn.onclick = () => { state.searchQuery = ""; searchInput.value = ""; clearBtn.classList.add("hidden"); render(); };
+
+        $("btnHeaderCreate").onclick = () => openEditor(null);
+        $("btnHeaderScan").onclick = () => openScannerModal(state.view === "editor" ? "EDITOR" : state.view === "set" ? state.study.setId : null);
+        $("btnThemeToggle").onclick = () => { applyTheme(state.prefs.theme === "dark" ? "light" : "dark"); savePrefs(); };
+        $("btnHeaderTransfer").onclick = openTransferModal;
+        $("btnHeaderSettings").onclick = openSettingsModal;
+
+        $("btnCloseScanner").onclick = closeScannerModal;
+        $("btnCloseSettings").onclick = () => $("settingsModal").classList.add("hidden");
+        $("btnCloseTransfer").onclick = () => $("transferModal").classList.add("hidden");
+        $("scannerModal").onclick = (e) => { if (e.target.id === "scannerModal") closeScannerModal(); };
+        $("settingsModal").onclick = (e) => { if (e.target.id === "settingsModal") e.target.classList.add("hidden"); };
+        $("transferModal").onclick = (e) => { if (e.target.id === "transferModal") e.target.classList.add("hidden"); };
+
+        window.addEventListener("paste", (e) => {
+          if (!state.scanner.open || state.scanner.step !== "capture") return;
+          for (const item of (e.clipboardData?.items || [])) {
+            if (item.type.startsWith("image/")) {
+              const file = item.getAsFile();
+              if (file) { e.preventDefault(); handleUploadedImageFile(file); break; }
+            }
+          }
+        });
+
+        window.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            if (state.scanner.open) closeScannerModal();
+            $("settingsModal").classList.add("hidden");
+            $("transferModal").classList.add("hidden");
+            return;
+          }
+          if (state.scanner.open || !$("settingsModal").classList.contains("hidden") || !$("transferModal").classList.contains("hidden")) return;
+          if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement?.tagName)) return;
+
+          if (state.view === "set" && state.study.mode === "flashcards" && !state.study.fc.finished) {
+            const k = e.key.toLowerCase();
+            if (e.code === "Space") { e.preventDefault(); $("flashcard3d")?.click(); }
+            else if (e.key === "ArrowLeft") { e.preventDefault(); ($("btnFcLearning") || $("btnFcPrev"))?.click(); }
+            else if (e.key === "ArrowRight") { e.preventDefault(); ($("btnFcKnow") || $("btnFcNext"))?.click(); }
+            else if (k === "s") { e.preventDefault(); $("fcStarFront")?.click(); }
+            else if (k === "a") { e.preventDefault(); $(state.study.fc.flipped ? "fcSpeakBack" : "fcSpeakFront")?.click(); }
+          }
+        });
+
+        window.addEventListener("beforeunload", stopCameraStream);
+      }
+
+      loadData();
+      wireGlobalEvents();
+      render();
+    })();
+  </script>
+</body>
+</html>
